@@ -134,6 +134,29 @@ function GuidanceInner() {
     }
   }
 
+  async function regenerateRoadmap(retryMessage) {
+    if (!result?.stream) return;
+    
+    notify(retryMessage || 'Regenerating roadmap...');
+    
+    try {
+      const roadmapRes = await fetch(`/api/roadmap?topic=${encodeURIComponent(result.stream)}`);
+      const roadmapData = await roadmapRes.json();
+      
+      if (roadmapRes.ok && roadmapData.mermaidCode) {
+        setResult(prev => ({
+          ...prev,
+          mermaidCode: roadmapData.mermaidCode
+        }));
+        notify('Roadmap regenerated successfully!');
+      } else {
+        notify('Failed to regenerate roadmap. Please try again.');
+      }
+    } catch (error) {
+      notify('Failed to regenerate roadmap. Please try again.');
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -186,7 +209,7 @@ function GuidanceInner() {
             </div>
           </div>
         ) : result ? (
-          <ResultView result={result} onCopyCode={copyMermaidCode} />
+          <ResultView result={result} onCopyCode={copyMermaidCode} onRetryRequest={regenerateRoadmap} />
         ) : (
           <AssessmentView
             questions={questions}
@@ -319,7 +342,7 @@ function QuestionCard({ question, index, selectedAnswer, onAnswerChange }) {
   );
 }
 
-function ResultView({ result, onCopyCode }) {
+function ResultView({ result, onCopyCode, onRetryRequest }) {
   const { assessment, stream, mermaidCode } = result;
   const confidence = Math.round(assessment.recommendation?.confidence || 0);
 
@@ -438,7 +461,7 @@ function ResultView({ result, onCopyCode }) {
 
           {mermaidCode ? (
             <div className="border border-gray-200 rounded-lg overflow-hidden">
-              <MermaidRenderer code={mermaidCode} />
+              <MermaidRenderer code={mermaidCode} onRetryRequest={onRetryRequest} />
             </div>
           ) : (
             <div className="border border-gray-200 rounded-lg p-8 text-center">

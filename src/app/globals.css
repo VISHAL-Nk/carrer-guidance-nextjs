@@ -125,3 +125,42 @@ body {
     opacity: 1;
   }
 }
+
+/* Mermaid diagram container styles */
+.mermaid-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.mermaid-container svg {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Ensure Mermaid doesn't break layout */
+.mermaid-container .mermaid {
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+}
+
+/* Fix for Mermaid text overflow */
+.mermaid-container text {
+  font-family: inherit;
+  font-size: 12px;
+}
+
+/* Responsive Mermaid styles */
+@media (max-width: 768px) {
+  .mermaid-container svg {
+    max-height: 400px;
+  }
+  
+  .mermaid-container text {
+    font-size: 10px;
+  }
+}

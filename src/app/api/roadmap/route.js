@@ -16,24 +16,30 @@ function getOpenAIClient() {
   return openai;
 }
 
-const ROADMAP_PROMPT = `Generate a detailed learning roadmap for the given topic. 
-Create a Mermaid flowchart diagram that shows:
-1. Clear progression from beginner to advanced levels
-2. Specific skills, technologies, or concepts to learn
-3. Logical dependencies between topics
-4. Estimated timeframes for each phase
-5. Key milestones and projects
+const ROADMAP_PROMPT = `You are a Mermaid flowchart generator. Given a topic, output ONLY a valid Mermaid flowchart (no explanation, no markdown, nothing else).
+Requirements (must be enforced each time):
 
-Format the response as valid Mermaid flowchart syntax only. Use:
-- flowchart TD (top-down direction)
-- Rectangle nodes for main topics: [Topic Name]
-- Rounded rectangle nodes for skills: (Skill Name)
-- Diamond nodes for decisions/milestones: {Milestone}
-- Arrows to show progression: -->
-- Subgraphs for grouping related concepts
+1. Always begin with: flowchart TD
+2. Node IDs must match ^[A-Za-z][A-Za-z0-9_]*$ (no spaces). Use underscores in IDs.
+3. Shapes:
+   - Rectangles for main stages: [Label]
+   - Rounded nodes for streams/courses: (Label)
+   - Diamonds for decisions/milestones: {Label}
+4. Follow a strict sequential backbone: [10th Standard] --> [11th-12th] --> {Entrance Exams} --> (UG Programs) --> (PG Programs) --> (PhD/Research) --> [Careers]
+   - Minimal branching allowed only at diamond nodes (decisions/exams). Any branch must rejoin or continue forward.
+5. Avoid subgraphs by default. If a subgraph is necessary, ensure unique subgraph name and a closing "end" and that all nodes inside connect to the backbone.
+6. Use only the arrow type: -->
+7. No duplicate IDs. No isolated nodes — every defined node ID must appear in at least one connection.
+8. Labels may contain spaces but MUST NOT contain unmatched [], (), {} characters or nested parentheses that conflict with node delimiters.
+9. Before returning, perform a self-check and fix issues:
+   - Balanced brackets/braces/parentheses count.
+   - No duplicate IDs.
+   - Every defined ID appears in a connection.
+   - No orphaned "subgraph" or missing "end".
+   - Replace any invalid characters in IDs with underscores.
+10. If the requested diagram would violate these rules (too many parallel branches, invalid characters, etc.), simplify or collapse nodes so the Mermaid remains valid while preserving intent.
+Output: the final, valid Mermaid flowchart code only.`;
 
-Make sure the diagram is syntactically correct and follows Mermaid standards.
-Only return the Mermaid code, no explanations or markdown formatting.`;
 
 function validateMermaidSyntax(mermaidCode) {
   if (!mermaidCode?.trim()) return false;
