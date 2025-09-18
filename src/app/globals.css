@@ -131,36 +131,190 @@ body {
   position: relative;
   width: 100%;
   max-width: 100%;
-  overflow: hidden;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
+/* Fullscreen mode */
+.mermaid-fullscreen {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1000;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: none;
+  max-height: none;
+}
+
+/* Mermaid SVG improvements for content visibility */
 .mermaid-container svg {
-  max-width: 100% !important;
+  max-width: none !important;
   height: auto !important;
   display: block;
   margin: 0 auto;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
-/* Ensure Mermaid doesn't break layout */
-.mermaid-container .mermaid {
-  width: 100%;
-  max-width: 100%;
-  overflow: visible;
+/* Ensure text content is visible */
+.mermaid-container svg text {
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif !important;
+  font-size: 14px !important;
+  fill: #1f2937 !important;
+  font-weight: 500;
 }
 
-/* Fix for Mermaid text overflow */
-.mermaid-container text {
-  font-family: inherit;
-  font-size: 12px;
+.mermaid-container svg .label text {
+  font-size: 13px !important;
+  fill: #374151 !important;
 }
 
-/* Responsive Mermaid styles */
+/* Node and shape styles for better visibility */
+.mermaid-container svg .node rect,
+.mermaid-container svg .node circle,
+.mermaid-container svg .node polygon {
+  fill: #f9fafb !important;
+  stroke: #3b82f6 !important;
+  stroke-width: 2px !important;
+}
+
+.mermaid-container svg .node.default rect,
+.mermaid-container svg .node.default circle,
+.mermaid-container svg .node.default polygon {
+  fill: #dbeafe !important;
+}
+
+/* Edge/arrow styles */
+.mermaid-container svg .edge path {
+  stroke: #374151 !important;
+  stroke-width: 2px !important;
+}
+
+.mermaid-container svg .arrowheadPath {
+  fill: #374151 !important;
+  stroke: #374151 !important;
+}
+
+/* Diagram container scrolling */
+.mermaid-diagram-container {
+  position: relative;
+  overflow: auto;
+  scroll-behavior: smooth;
+}
+
+.mermaid-diagram-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.mermaid-diagram-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.mermaid-diagram-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.mermaid-diagram-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* SVG wrapper for zoom functionality */
+.mermaid-svg-wrapper {
+  min-width: 100%;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mermaid-svg-content {
+  display: inline-block;
+}
+
+/* Control panel styling */
+.mermaid-controls {
+  user-select: none;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.mermaid-controls button {
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.mermaid-controls button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+}
+
+.mermaid-controls button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.mermaid-controls button:disabled {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Cursor states for panning */
+.cursor-grab {
+  cursor: grab;
+}
+
+.cursor-grabbing {
+  cursor: grabbing;
+}
+
+.cursor-grabbing * {
+  cursor: grabbing !important;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .mermaid-container svg {
-    max-height: 400px;
+  .mermaid-fullscreen {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
   }
   
-  .mermaid-container text {
-    font-size: 10px;
+  .mermaid-controls {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+  
+  .mermaid-controls > div {
+    justify-content: center;
+  }
+  
+  .mermaid-container svg text {
+    font-size: 12px !important;
+  }
+  
+  .mermaid-diagram-container {
+    min-height: 250px !important;
+    max-height: 400px !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .mermaid-controls {
+    display: none;
+  }
+  
+  .mermaid-container {
+    box-shadow: none;
+    border: 1px solid #e5e7eb;
   }
 }

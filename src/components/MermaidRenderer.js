@@ -1,12 +1,19 @@
 "use client";
 import mermaid from "mermaid";
-import { useEffect, useId, useState, useCallback } from "react";
+import { useEffect, useId, useState, useCallback, useRef } from "react";
 
 export default function MermaidRenderer({ code, config, onRetryRequest }) {
   const [svg, setSvg] = useState("");
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [zoom, setZoom] = useState(1);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isPanning, setIsPanning] = useState(false);
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef(null);
   const id = useId().replace(/:/g, "");
 
   // Validate Mermaid syntax
@@ -56,31 +63,78 @@ export default function MermaidRenderer({ code, config, onRetryRequest }) {
         throw new Error("Invalid Mermaid diagram syntax. Please check your diagram format.");
       }
 
-      // Initialize mermaid with safe configuration
+      // Initialize mermaid with better configuration for content visibility
       mermaid.initialize({ 
         startOnLoad: false, 
         securityLevel: "loose", 
         theme: "default",
-        fontFamily: "inherit",
+        themeVariables: {
+          fontFamily: "ui-sans-serif, system-ui, -apple-system, sans-serif",
+          fontSize: "14px",
+          primaryColor: "#3b82f6",
+          primaryTextColor: "#1f2937",
+          primaryBorderColor: "#2563eb",
+          lineColor: "#374151",
+          sectionBkgColor: "#f9fafb",
+          altSectionBkgColor: "#f3f4f6",
+          gridColor: "#e5e7eb",
+          textColor: "#1f2937",
+          taskBkgColor: "#f9fafb",
+          taskTextColor: "#1f2937",
+          activeTaskBkgColor: "#dbeafe",
+          activeTaskBorderColor: "#3b82f6",
+          cScale0: "#3b82f6",
+          cScale1: "#10b981",
+          cScale2: "#f59e0b"
+        },
+        fontFamily: "ui-sans-serif, system-ui, -apple-system, sans-serif",
+        fontSize: 14,
         maxTextSize: 50000,
         maxEdges: 500,
+        htmlLabels: true,
+        flowchart: {
+          useMaxWidth: false,
+          htmlLabels: true,
+          curve: 'basis'
+        },
+        sequence: {
+          useMaxWidth: false,
+          wrap: true
+        },
+        gantt: {
+          useMaxWidth: false
+        },
         ...config 
       });
 
       // Render with timeout protection
       const renderPromise = mermaid.render(`mmd-${id}`, code);
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error("Rendering timeout")), 10000)
+        setTimeout(() => reject(new Error("Rendering timeout")), 15000)
       );
 
       const result = await Promise.race([renderPromise, timeoutPromise]);
       
       if (result && result.svg) {
-        // Clean the SVG to prevent layout issues
-        const cleanSvg = result.svg
-          .replace(/style="max-width: \d+px;"/g, '') // Remove fixed width constraints
-          .replace(/width="\d+"/g, 'width="100%"') // Make responsive
-          .replace(/height="\d+"/g, 'height="auto"'); // Make responsive height
+        // Preserve SVG dimensions and styling for proper content visibility
+        let cleanSvg = result.svg;
+        
+        // Ensure proper viewBox and preserve dimensions
+        if (!cleanSvg.includes('viewBox')) {
+          const widthMatch = cleanSvg.match(/width="(\d+)"/);
+          const heightMatch = cleanSvg.match(/height="(\d+)"/);
+          if (widthMatch && heightMatch) {
+            const width = widthMatch[1];
+            const height = heightMatch[1];
+            cleanSvg = cleanSvg.replace('<svg', `<svg viewBox="0 0 ${width} ${height}"`);
+          }
+        }
+        
+        // Make sure text and content are visible
+        cleanSvg = cleanSvg
+          .replace(/fill="transparent"/g, 'fill="#1f2937"')
+          .replace(/stroke="transparent"/g, 'stroke="#374151"')
+          .replace(/color="transparent"/g, 'color="#1f2937"');
         
         setSvg(cleanSvg);
         setError(null);
@@ -125,6 +179,76 @@ export default function MermaidRenderer({ code, config, onRetryRequest }) {
       onRetryRequest("The diagram failed to render properly. Please regenerate the Mermaid code with correct syntax.");
     }
   }, [onRetryRequest]);
+
+  // Zoom controls
+  const zoomIn = useCallback(() => {
+    setZoom(prev => Math.min(prev + 0.25, 3));
+  }, []);
+
+  const zoomOut = useCallback(() => {
+    setZoom(prev => Math.max(prev - 0.25, 0.5));
+  }, []);
+
+  const resetZoom = useCallback(() => {
+    setZoom(1);
+  }, []);
+
+  const toggleFullscreen = useCallback(() => {
+    setIsFullscreen(prev => !prev);
+  }, []);
+
+  const togglePanning = useCallback(() => {
+    setIsPanning(prev => !prev);
+  }, []);
+
+  const resetView = useCallback(() => {
+    setZoom(1);
+    setPanOffset({ x: 0, y: 0 });
+  }, []);
+
+  // Handle wheel zoom
+  const handleWheel = useCallback((e) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      setZoom(prev => Math.max(0.5, Math.min(3, prev + delta)));
+    }
+  }, []);
+
+  // Handle mouse events for panning
+  const handleMouseDown = useCallback((e) => {
+    if (isPanning && e.button === 0) { // Left click only
+      setIsDragging(true);
+      setDragStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y });
+      e.preventDefault();
+    }
+  }, [isPanning, panOffset]);
+
+  const handleMouseMove = useCallback((e) => {
+    if (isDragging && isPanning) {
+      const newOffset = {
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y
+      };
+      setPanOffset(newOffset);
+    }
+  }, [isDragging, isPanning, dragStart]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  // Add global mouse event listeners
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   if (!code) return null;
 
@@ -204,23 +328,129 @@ export default function MermaidRenderer({ code, config, onRetryRequest }) {
     );
   }
 
-  // Success state - render the SVG
+  // Success state - render the SVG with zoom controls
   return (
-    <div className="mermaid-container">
-      <div 
-        className="overflow-auto w-full" 
-        style={{ minHeight: '200px', maxHeight: '800px' }}
-        dangerouslySetInnerHTML={{ __html: svg }} 
-      />
-      
-      {/* Success feedback for users */}
-      {retryCount > 0 && (
-        <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded">
-          <p className="text-xs text-green-700">
-            ✓ Diagram rendered successfully{retryCount > 1 ? ` after ${retryCount} attempts` : ''}
-          </p>
+    <div className={`mermaid-container ${isFullscreen ? 'mermaid-fullscreen' : ''}`}>
+      {/* Control Panel */}
+      <div className="mermaid-controls flex items-center justify-between p-3 bg-gradient-to-r from-gray-100 to-gray-50 border border-gray-300 rounded-t-lg shadow-sm">
+        <div className="flex items-center space-x-2">
+          {/* Hand/Pan Tool */}
+          <button
+            onClick={togglePanning}
+            className={`w-8 h-8 flex items-center justify-center border-2 rounded transition-all ${
+              isPanning 
+                ? 'bg-blue-500 border-blue-600 text-white shadow-md' 
+                : 'bg-white border-gray-400 text-gray-700 hover:bg-gray-50 hover:border-gray-500'
+            }`}
+            title={isPanning ? "Disable Pan Mode" : "Enable Pan Mode (Drag to move)"}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
+            </svg>
+          </button>
+
+          <div className="w-px h-6 bg-gray-300 mx-2"></div>
+
+          {/* Zoom Controls */}
+          <span className="text-sm font-medium text-gray-700">Zoom:</span>
+          <button
+            onClick={zoomOut}
+            disabled={zoom <= 0.5}
+            className="w-8 h-8 flex items-center justify-center bg-white border-2 border-gray-400 text-gray-700 rounded hover:bg-gray-50 hover:border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 transition-all"
+            title="Zoom Out"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+            </svg>
+          </button>
+          
+          <div className="px-3 py-1 text-sm font-mono font-semibold text-gray-800 bg-white border-2 border-gray-400 rounded min-w-[4rem] text-center">
+            {Math.round(zoom * 100)}%
+          </div>
+          
+          <button
+            onClick={zoomIn}
+            disabled={zoom >= 3}
+            className="w-8 h-8 flex items-center justify-center bg-white border-2 border-gray-400 text-gray-700 rounded hover:bg-gray-50 hover:border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 transition-all"
+            title="Zoom In"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+            </svg>
+          </button>
+          
+          <button
+            onClick={resetView}
+            className="px-3 py-1 text-xs font-medium bg-white border-2 border-gray-400 text-gray-700 rounded hover:bg-gray-50 hover:border-gray-500 transition-all"
+            title="Reset View (Zoom & Position)"
+          >
+            Reset View
+          </button>
         </div>
-      )}
+        
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={toggleFullscreen}
+            className="w-8 h-8 flex items-center justify-center bg-white border-2 border-gray-400 text-gray-700 rounded hover:bg-gray-50 hover:border-gray-500 transition-all"
+            title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+          >
+            {isFullscreen ? (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M15 15v4.5M15 15h4.5M15 15l5.25 5.25M9 15H4.5M9 15v4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Diagram Container */}
+      <div 
+        ref={containerRef}
+        className={`mermaid-diagram-container border border-gray-200 border-t-0 rounded-b-lg bg-white ${
+          isPanning ? 'cursor-grab' : 'cursor-default'
+        } ${isDragging ? 'cursor-grabbing' : ''}`}
+        style={{ 
+          height: isFullscreen ? 'calc(100vh - 120px)' : 'auto',
+          minHeight: isFullscreen ? 'calc(100vh - 120px)' : '300px',
+          maxHeight: isFullscreen ? 'none' : '600px',
+          overflow: isPanning ? 'hidden' : 'auto',
+          position: 'relative'
+        }}
+        onWheel={handleWheel}
+        onMouseDown={handleMouseDown}
+      >
+        <div 
+          className="mermaid-svg-wrapper p-4 flex items-center justify-center min-h-full"
+          style={{ 
+            transform: `scale(${zoom}) translate(${panOffset.x}px, ${panOffset.y}px)`,
+            transformOrigin: 'center center',
+            transition: isDragging ? 'none' : 'transform 0.2s ease-in-out',
+            userSelect: isPanning ? 'none' : 'auto'
+          }}
+        >
+          <div 
+            className="mermaid-svg-content"
+            dangerouslySetInnerHTML={{ __html: svg }}
+          />
+        </div>
+      </div>
+
+      {/* Usage Tips */}
+      <div className="mt-2 text-xs text-gray-500 flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <span>💡 Ctrl/Cmd + scroll to zoom</span>
+          <span>✋ Enable hand tool to drag and pan</span>
+        </div>
+        {retryCount > 0 && (
+          <span className="text-green-600 font-medium">
+            ✓ Rendered successfully{retryCount > 1 ? ` after ${retryCount} attempts` : ''}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
