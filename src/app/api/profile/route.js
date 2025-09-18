@@ -27,7 +27,7 @@ export async function PUT(request) {
     const userId = await requireUser(request);
     const profileData = await request.json();
     if (!profileData || Object.keys(profileData).length === 0) return json({ message: 'Profile data is required' }, 400);
-    if (!profileData.stream && profileData.class === '10th') profileData.stream = 'None';
+    if (!profileData.stream && profileData.class === '10th') profileData.stream = 'Other';
     await connectDB();
     const existing = await UserProfile.findById(userId);
     if (!existing) return json({ message: 'User profile not found' }, 404);
@@ -64,8 +64,9 @@ export async function GET(request) {
     const { percentage, isComplete } = await user.calculateProfileCompletion();
     return json({ profile, profileCompletion: { isComplete, percentage } });
   } catch (e) {
+    console.error('Profile GET API error:', e);
     if (e.message === '401') return json({ message: 'Authentication token is missing or invalid' }, 401);
-    return json({ message: 'Server error' }, 500);
+    return json({ message: 'Server error', error: e.message }, 500);
   }
 }
 

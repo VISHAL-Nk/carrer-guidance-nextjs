@@ -26,19 +26,21 @@ export function middleware(request) {
     'Content-Security-Policy',
     [
       "default-src 'self'",
-      // Allow scripts from self; Mermaid doesn't need unsafe-eval in v11 by default
-      "script-src 'self'",
-      // Mermaid-generated SVGs use inline styles; permit them
+      // Allow Next.js scripts and development tools
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      // Allow inline styles for Next.js and Tailwind
       "style-src 'self' 'unsafe-inline'",
-      // Allow data URIs for inlined SVG/images
+      // Allow images from self, data URLs, and HTTPS sources
       "img-src 'self' data: https:",
+      // Allow fonts from self and data URLs
       "font-src 'self' data:",
-      // Allow wasm/data/blob if needed by future renderers
+      // Allow connections to self for API calls
       "connect-src 'self'",
+      // Allow media from self
       "media-src 'self'",
+      // Block object and frame sources for security
       "object-src 'none'",
       "frame-src 'none'",
-      // Allow rendering inline SVG (mermaid injects <style> into SVG); already covered by style-src
     ].join('; ')
   );
 

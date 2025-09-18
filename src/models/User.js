@@ -19,9 +19,14 @@ const userSchema = new mongoose.Schema(
 
 userSchema.methods.calculateProfileCompletion = async function () {
   try {
-    const UserProfile = mongoose.model('UserProfile');
+    const UserProfile = mongoose.models.UserProfile;
+    if (!UserProfile) {
+      return { percentage: 0, isComplete: false };
+    }
+    
     const profile = await UserProfile.findById(this._id);
     if (!profile) return { percentage: 0, isComplete: false };
+    
     const requiredFields = [
       { field: 'dob', weight: 25 },
       { field: 'gender', weight: 20 },
@@ -29,20 +34,32 @@ userSchema.methods.calculateProfileCompletion = async function () {
       { field: 'class', weight: 20 },
       { field: 'stream', weight: 10 },
     ];
+    
     let completedWeight = 0;
     const totalWeight = requiredFields.reduce((s, f) => s + f.weight, 0);
+    
     requiredFields.forEach(({ field, weight }) => {
-      if (profile[field] && profile[field] !== 'Prefer not to say' && profile[field] !== 'None') {
+      // Check if field has a value and is not a default/empty value
+      const fieldValue = profile[field];
+      const isComplete = fieldValue && 
+                        fieldValue !== '' && 
+                        fieldValue !== 'Prefer not to say';
+      
+      if (isComplete) {
         completedWeight += weight;
       }
     });
+    
     const percentage = Math.round((completedWeight / totalWeight) * 100);
     const isComplete = percentage === 100;
+    
     this.profileCompletionPercentage = percentage;
     this.isProfileComplete = isComplete;
     await this.save();
+    
     return { percentage, isComplete };
-  } catch {
+  } catch (error) {
+    console.error('Error in calculateProfileCompletion:', error);
     return { percentage: 0, isComplete: false };
   }
 };

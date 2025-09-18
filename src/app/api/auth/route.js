@@ -49,6 +49,11 @@ async function handleRegister(req) {
   const hashedPassword = await bcryptjs.hash(password, 12);
   const otp = otpGenerator.generate(6, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false });
 
+  // Log OTP in development mode for testing
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`🔐 OTP for ${phone}: ${otp}`);
+  }
+
   pendingRegistrations.set(phone, {
     firstName: firstName.trim(),
     middleName: middleName?.trim() || null,
