@@ -4,6 +4,7 @@ import RequireCompleteProfile from '@/components/RequireCompleteProfile';
 import dynamic from 'next/dynamic';
 import { useToast } from '@/contexts/ToastContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { collegeAfter10, collegeAfter12 } from '@/lib/data/collegeData';
 import { 
   BookOpen, 
   Target, 
@@ -209,7 +210,12 @@ function GuidanceInner() {
             </div>
           </div>
         ) : result ? (
-          <ResultView result={result} onCopyCode={copyMermaidCode} onRetryRequest={regenerateRoadmap} />
+          <ResultView
+            result={result}
+            userClass={userClass}
+            onCopyCode={copyMermaidCode}
+            onRetryRequest={regenerateRoadmap}
+          />
         ) : (
           <AssessmentView
             questions={questions}
@@ -342,11 +348,37 @@ function QuestionCard({ question, index, selectedAnswer, onAnswerChange }) {
   );
 }
 
-function ResultView({ result, onCopyCode, onRetryRequest }) {
+function ResultView({ result, userClass, onCopyCode, onRetryRequest }) {
   const { assessment, stream, mermaidCode } = result;
   const confidence = Math.round(assessment.recommendation?.confidence || 0);
+  const [showAllColleges, setShowAllColleges] = useState(false);
+
+  // Map the recommended stream to college categories in our data
+  const streamToCollegeTypes = {
+    'Science Stream': ['Science', 'Medical College', 'Engineering College'],
+    'Commerce Stream': ['Commerce'],
+    'Arts/Humanities Stream': ['Arts'],
+    'Diploma Courses': ['Polytechnic'],
+    'Vocational Training': ['ITI'],
+  };
+
+  function normalize(str) {
+    return (str || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  }
+
+  // Determine which dataset to use based on user class
+  const dataset = userClass === '12th' ? collegeAfter12 : collegeAfter10;
+
+  // Determine target types for filtering based on stream name or key
+  const streamName = assessment?.recommendation?.pathDetails?.name || stream;
+  const targetTypes = streamToCollegeTypes[streamName] || [];
+
+  const matchingColleges = (dataset || []).filter((c) =>
+    Array.isArray(c.CollegeType) && c.CollegeType.some((t) => targetTypes.includes(t))
+  );
 
   return (
+    <>
     <div className="grid lg:grid-cols-2 gap-8">
       {/* Results */}
       <div className="space-y-6">
@@ -423,8 +455,9 @@ function ResultView({ result, onCopyCode, onRetryRequest }) {
             </div>
           </div>
         )}
-      </div>
 
+      </div>
+      
       {/* AI Roadmap */}
       <div className="space-y-6">
   <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-6 ring-1 ring-black/5">
@@ -489,5 +522,52 @@ function ResultView({ result, onCopyCode, onRetryRequest }) {
         </div>
       </div>
     </div>
+
+    {/* Full-width Colleges Suggestions */}
+    <div className="mt-2">
+      <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-6 ring-1 ring-black/5">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">Suggested Colleges</h3>
+            <p className="text-sm text-gray-500">Showing {Math.min(matchingColleges.length, showAllColleges ? matchingColleges.length : 5)} of {matchingColleges.length} matches</p>
+          </div>
+          {matchingColleges.length > 5 && (
+            <button
+              onClick={() => setShowAllColleges((v) => !v)}
+              className="text-sm font-medium text-blue-600 hover:text-blue-800"
+            >
+              {showAllColleges ? 'View less' : 'View more colleges'}
+            </button>
+          )}
+        </div>
+        {matchingColleges.length > 0 ? (
+          <ul className="divide-y divide-gray-200">
+            {(showAllColleges ? matchingColleges : matchingColleges.slice(0, 5)).map((college) => (
+              <li key={college.id} className="py-3 flex items-start justify-between gap-4">
+                <div>
+                  <p className="font-medium text-gray-900">{college.collegeName}</p>
+                  <p className="text-sm text-gray-600">{college.location} • {college.CollegeType.join(', ')}</p>
+                </div>
+                {college.link ? (
+                  <a
+                    href={college.link.startsWith('http') ? college.link : `https://${college.link}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  >
+                    Visit <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                ) : (
+                  <span className="text-xs text-gray-400">No link</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-gray-600">No colleges found for this stream in our dataset.</p>
+        )}
+      </div>
+    </div>
+    </>
   );
 }

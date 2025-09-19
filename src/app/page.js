@@ -15,10 +15,14 @@ import {
   Star,
 } from "lucide-react";
 import Chatbot from "@/components/CB/Chatbot";
+import { useToast } from "@/contexts/ToastContext";
 
 export default function Home() {
   const { user, completion, loading } = useAuth();
+  const { notify } = useToast();
   const [slide, setSlide] = useState(0);
+  const [fb, setFb] = useState({ name: "", email: "", message: "", rating: 5 });
+  const [fbSubmitting, setFbSubmitting] = useState(false);
   const slides = [
     "/images/WhatsApp Image 2025-09-19 at 3.55.30 PM.jpeg",
     "/images/WhatsApp Image 2025-09-19 at 3.55.30 PM (1).jpeg",
@@ -264,7 +268,6 @@ export default function Home() {
                     icon={<Star className="w-5 h-5" />}
                     color="purple"
                     locked={!isProfileComplete}
-                    comingSoon
                   />
                   <DashboardCard
                     href="/scholarships"
@@ -373,6 +376,108 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Feedback Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-8 ring-1 ring-black/5">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">We value your feedback</h2>
+                <p className="text-sm text-gray-600 dark:text-gray-300">Share your thoughts to help us improve.</p>
+              </div>
+            </div>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!fb.name || !fb.email || !fb.message) {
+                  notify('Please fill in name, email and your feedback.');
+                  return;
+                }
+                setFbSubmitting(true);
+                try {
+                  const res = await fetch('/api/feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(fb),
+                  });
+                  const data = await res.json();
+                  if (res.ok && data.success) {
+                    notify('Thanks for your feedback!');
+                    setFb({ name: '', email: '', message: '', rating: 5 });
+                  } else {
+                    notify(data.message || 'Failed to submit feedback');
+                  }
+                } catch (err) {
+                  notify('Network error. Please try again.');
+                } finally {
+                  setFbSubmitting(false);
+                }
+              }}
+              className="space-y-4"
+            >
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+                  <input
+                    type="text"
+                    value={fb.name}
+                    onChange={(e) => setFb((s) => ({ ...s, name: e.target.value }))}
+                    className="w-full rounded-xl border-2 border-gray-200 focus:border-blue-500 px-4 py-2 bg-white/80 dark:bg-[#0b1220]/70"
+                    placeholder="Your name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={fb.email}
+                    onChange={(e) => setFb((s) => ({ ...s, email: e.target.value }))}
+                    className="w-full rounded-xl border-2 border-gray-200 focus:border-blue-500 px-4 py-2 bg-white/80 dark:bg-[#0b1220]/70"
+                    placeholder="you@example.com"
+                  />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rating</label>
+                  <select
+                    value={fb.rating}
+                    onChange={(e) => setFb((s) => ({ ...s, rating: Number(e.target.value) }))}
+                    className="w-full rounded-xl border-2 border-gray-200 focus:border-blue-500 px-4 py-2 bg-white/80 dark:bg-[#0b1220]/70"
+                  >
+                    {[5,4,3,2,1].map((r) => (
+                      <option key={r} value={r}>{r} / 5</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Feedback</label>
+                <textarea
+                  value={fb.message}
+                  onChange={(e) => setFb((s) => ({ ...s, message: e.target.value }))}
+                  className="w-full rounded-xl border-2 border-gray-200 focus:border-blue-500 px-4 py-3 min-h-[120px] bg-white/80 dark:bg-[#0b1220]/70"
+                  placeholder="Tell us what you liked or what we can improve..."
+                />
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={fbSubmitting}
+                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-semibold btn-hover transition-all flex items-center justify-center gap-2"
+                >
+                  {fbSubmitting && (<span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />)}
+                  <span>{fbSubmitting ? 'Submitting...' : 'Submit Feedback'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
