@@ -113,7 +113,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
@@ -132,7 +132,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+  <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-xl p-8 ring-1 ring-black/5">
           {stage === 1 ? (
             <form onSubmit={handleRegistration} className="space-y-6">
               {/* Name Fields */}

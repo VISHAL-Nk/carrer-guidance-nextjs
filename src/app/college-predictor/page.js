@@ -147,7 +147,7 @@ async function handleSubmit(e) {
 }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50">
+    <main className="min-h-screen">
       <section className="px-4 sm:px-6 lg:px-8 pt-10 pb-6">
         <div className="max-w-6xl mx-auto">
           <header className="flex items-center justify-between mb-8">
@@ -178,7 +178,7 @@ async function handleSubmit(e) {
             <div className="lg:col-span-1">
               <form
                 onSubmit={handleSubmit}
-                className="bg-white rounded-2xl shadow-lg p-6"
+                className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-6 ring-1 ring-black/5"
               >
                 <div className="flex items-center gap-2 mb-4">
                   <Filter className="w-4 h-4 text-blue-600" />
@@ -382,7 +382,7 @@ async function handleSubmit(e) {
                 )}
               </form>
 
-              <div className="mt-4 text-sm text-gray-600 bg-white border border-gray-200 rounded-2xl p-4 flex gap-2">
+              <div className="glass mt-4 text-sm text-gray-600 bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur border border-gray-200/70 rounded-2xl p-4 flex gap-2 ring-1 ring-black/5">
                 <Info className="w-4 h-4 text-gray-500 mt-1" />
                 <p>
                   This tool sends your preferences to your local backend at
@@ -394,7 +394,7 @@ async function handleSubmit(e) {
 
             {/* Results */}
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-2xl shadow-lg p-6">
+              <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-6 ring-1 ring-black/5">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <Target className="w-5 h-5 text-emerald-600" />
@@ -425,7 +425,7 @@ async function handleSubmit(e) {
                   <div className="overflow-x-auto -mx-4 sm:mx-0">
                     <table className="min-w-full text-left border-collapse">
                       <thead>
-                        <tr className="bg-gray-50 text-gray-700 text-sm">
+                        <tr className="bg-gray-900 text-gray-700 text-sm">
                           <Th>College</Th>
                           <Th>Program</Th>
                           <Th>Quota</Th>
@@ -440,7 +440,7 @@ async function handleSubmit(e) {
                           <tr
                             key={`${r.college}-${r.program}-${idx}`}
                             className={
-                              idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                              idx % 2 === 0 ? "bg-gray-800" : "bg-gray-700"
                             }
                           >
                             <Td>

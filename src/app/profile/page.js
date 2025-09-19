@@ -127,7 +127,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -139,7 +139,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Form */}
-        <div className="bg-white rounded-2xl shadow-lg p-8">
+  <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-8 ring-1 ring-black/5">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Date of Birth */}
             <div>

@@ -24,12 +24,12 @@ export default function SiteHeader() {
   const navLinks = [];
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+    <header className="sticky top-0 z-50 backdrop-blur-md bg-white/70 dark:bg-[#0b1220]/60 border-b border-white/30 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.25)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 via-indigo-500 to-emerald-500 rounded-lg flex items-center justify-center shadow ring-1 ring-black/5">
               <span className="text-white font-bold text-sm">CG</span>
             </div>
             <span className="font-bold text-xl gradient-text">CareerGuide</span>
@@ -56,7 +56,7 @@ export default function SiteHeader() {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center space-x-3 bg-gray-50 hover:bg-gray-100 rounded-full px-3 py-2 transition-colors"
+                  className="flex items-center space-x-3 bg-white/70 hover:bg-white/90 dark:bg-white/10 dark:hover:bg-white/20 rounded-full px-3 py-2 transition-colors ring-1 ring-black/5 shadow-sm shine"
                 >
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-full flex items-center justify-center">
                     <span className="text-white font-medium text-sm">
@@ -64,7 +64,7 @@ export default function SiteHeader() {
                     </span>
                   </div>
                   <div className="hidden sm:block text-left">
-                    <div className="font-medium text-gray-900">{user.firstName}</div>
+                    <div className="font-medium text-gray-900 dark:text-white">{user.firstName}</div>
                     {completion && (
                       <div className="text-xs text-gray-500">
                         {Math.round(completion.percentage)}% complete
@@ -75,9 +75,9 @@ export default function SiteHeader() {
                 </button>
 
                 {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
+                  <div className="absolute right-0 mt-2 w-64 bg-white/90 dark:bg-[#0b1220]/95 backdrop-blur rounded-xl shadow-lg border border-white/30 py-2 z-50">
                     <div className="px-4 py-3 border-b border-gray-100">
-                      <div className="font-medium text-gray-900">
+                      <div className="font-medium text-gray-900 dark:text-white">
                         {user.firstName} {user.lastName}
                       </div>
                       <div className="text-sm text-gray-500">{user.email}</div>
@@ -98,7 +98,7 @@ export default function SiteHeader() {
                     </div>
                     <Link
                       href="/profile"
-                      className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors"
+                      className="flex items-center space-x-3 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-50/70 dark:hover:bg-white/5 transition-colors"
                       onClick={() => setDropdownOpen(false)}
                     >
                       <Settings className="w-4 h-4" />
@@ -109,7 +109,7 @@ export default function SiteHeader() {
                         signout();
                         setDropdownOpen(false);
                       }}
-                      className="flex items-center space-x-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors w-full text-left"
+                      className="flex items-center space-x-3 px-4 py-2 text-red-600 hover:bg-red-50/80 dark:hover:bg-red-500/10 transition-colors w-full text-left"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>Sign Out</span>
@@ -121,13 +121,13 @@ export default function SiteHeader() {
               <div className="flex items-center space-x-3">
                 <Link
                   href="/login"
-                  className="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+                  className="text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium transition-colors"
                 >
                   Login
                 </Link>
                 <Link
                   href="/register"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium btn-hover transition-all"
+                  className="bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-600 hover:from-blue-700 hover:via-indigo-700 hover:to-emerald-700 text-white px-4 py-2 rounded-lg font-medium btn-hover transition-all shadow shine"
                 >
                   Get Started
                 </Link>
@@ -146,13 +146,13 @@ export default function SiteHeader() {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4">
+          <div className="md:hidden border-t border-white/40 py-4 bg-white/60 dark:bg-[#0b1220]/60 backdrop-blur">
             <nav className="flex flex-col space-y-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-gray-600 hover:text-blue-600 font-medium py-2 transition-colors"
+                  className="text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium py-2 transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.label}

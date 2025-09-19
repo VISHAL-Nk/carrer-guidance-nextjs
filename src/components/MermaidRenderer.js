@@ -255,7 +255,7 @@ export default function MermaidRenderer({ code, config, onRetryRequest }) {
   // Loading state
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-8 border border-gray-200 rounded-lg bg-gray-50">
+      <div className="flex items-center justify-center p-8 border border-gray-200 rounded-lg bg-gray-800">
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
           <p className="text-sm text-gray-600">Rendering diagram...</p>
@@ -332,7 +332,7 @@ export default function MermaidRenderer({ code, config, onRetryRequest }) {
   return (
     <div className={`mermaid-container ${isFullscreen ? 'mermaid-fullscreen' : ''}`}>
       {/* Control Panel */}
-      <div className="mermaid-controls flex items-center justify-between p-3 bg-gradient-to-r from-gray-100 to-gray-50 border border-gray-300 rounded-t-lg shadow-sm">
+      <div className="mermaid-controls flex items-center justify-between p-3 bg-gradient-to-r from-gray-900 to-gray-700 border border-gray-300 rounded-t-lg shadow-sm">
         <div className="flex items-center space-x-2">
           {/* Hand/Pan Tool */}
           <button
@@ -340,7 +340,7 @@ export default function MermaidRenderer({ code, config, onRetryRequest }) {
             className={`w-8 h-8 flex items-center justify-center border-2 rounded transition-all ${
               isPanning 
                 ? 'bg-blue-500 border-blue-600 text-white shadow-md' 
-                : 'bg-white border-gray-400 text-gray-700 hover:bg-gray-50 hover:border-gray-500'
+                : 'bg-black border-gray-400 text-gray-700 hover:bg-gray-50 hover:border-gray-500'
             }`}
             title={isPanning ? "Disable Pan Mode" : "Enable Pan Mode (Drag to move)"}
           >
@@ -349,14 +349,14 @@ export default function MermaidRenderer({ code, config, onRetryRequest }) {
             </svg>
           </button>
 
-          <div className="w-px h-6 bg-gray-300 mx-2"></div>
+          <div className="w-px h-6 bg-gray-800 mx-2"></div>
 
           {/* Zoom Controls */}
-          <span className="text-sm font-medium text-gray-700">Zoom:</span>
+          <span className="text-sm font-medium text-black">Zoom:</span>
           <button
             onClick={zoomOut}
             disabled={zoom <= 0.5}
-            className="w-8 h-8 flex items-center justify-center bg-white border-2 border-gray-400 text-gray-700 rounded hover:bg-gray-50 hover:border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 transition-all"
+            className="w-8 h-8 flex items-center justify-center bg-black border-2 border-gray-400 text-gray-700 rounded hover:bg-gray-600 hover:border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 transition-all"
             title="Zoom Out"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -364,14 +364,14 @@ export default function MermaidRenderer({ code, config, onRetryRequest }) {
             </svg>
           </button>
           
-          <div className="px-3 py-1 text-sm font-mono font-semibold text-gray-800 bg-white border-2 border-gray-400 rounded min-w-[4rem] text-center">
+          <div className="px-3 py-1 text-sm font-mono font-semibold text-black bg-white border-2 border-gray-400 rounded min-w-[4rem] text-center">
             {Math.round(zoom * 100)}%
           </div>
           
           <button
             onClick={zoomIn}
             disabled={zoom >= 3}
-            className="w-8 h-8 flex items-center justify-center bg-white border-2 border-gray-400 text-gray-700 rounded hover:bg-gray-50 hover:border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 transition-all"
+            className="w-8 h-8 flex items-center justify-center bg-black border-2 border-gray-400 text-gray-700 rounded hover:bg-gray-600 hover:border-gray-500 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100 transition-all"
             title="Zoom In"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -381,7 +381,7 @@ export default function MermaidRenderer({ code, config, onRetryRequest }) {
           
           <button
             onClick={resetView}
-            className="px-3 py-1 text-xs font-medium bg-white border-2 border-gray-400 text-gray-700 rounded hover:bg-gray-50 hover:border-gray-500 transition-all"
+            className="px-3 py-1 text-xs font-medium bg-white border-2 border-gray-400 text-black rounded hover:bg-gray-50 hover:border-gray-500 transition-all"
             title="Reset View (Zoom & Position)"
           >
             Reset View
@@ -391,7 +391,7 @@ export default function MermaidRenderer({ code, config, onRetryRequest }) {
         <div className="flex items-center space-x-2">
           <button
             onClick={toggleFullscreen}
-            className="w-8 h-8 flex items-center justify-center bg-white border-2 border-gray-400 text-gray-700 rounded hover:bg-gray-50 hover:border-gray-500 transition-all"
+            className="w-8 h-8 flex items-center justify-center bg-black border-2 border-gray-400 text-gray-700 rounded hover:bg-gray-600 hover:border-gray-500 transition-all"
             title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
           >
             {isFullscreen ? (

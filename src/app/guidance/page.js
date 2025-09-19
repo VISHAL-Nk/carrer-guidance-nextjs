@@ -159,7 +159,7 @@ function GuidanceInner() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 loading-pulse">
             <BookOpen className="w-8 h-8 text-blue-600" />
@@ -171,7 +171,7 @@ function GuidanceInner() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-12">
@@ -188,7 +188,7 @@ function GuidanceInner() {
 
         {userClass === '12th' ? (
           <div className="max-w-2xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
+            <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-8 text-center ring-1 ring-black/5">
               <div className="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <Clock className="w-8 h-8 text-yellow-600" />
               </div>
@@ -231,7 +231,7 @@ function AssessmentView({ questions, answers, setAnswers, progress, allAnswered,
     <div className="grid lg:grid-cols-3 gap-8">
       {/* Progress Sidebar */}
       <div className="lg:col-span-1">
-        <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
+  <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-6 sticky top-24 ring-1 ring-black/5">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Assessment Progress</h3>
           
           <div className="mb-6">
@@ -308,7 +308,7 @@ function AssessmentView({ questions, answers, setAnswers, progress, allAnswered,
 
 function QuestionCard({ question, index, selectedAnswer, onAnswerChange }) {
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 card-hover">
+  <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-6 card-hover ring-1 ring-black/5">
       <div className="flex items-start space-x-4">
         <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
           <span className="text-sm font-semibold text-blue-600">{index + 1}</span>
@@ -350,7 +350,7 @@ function ResultView({ result, onCopyCode, onRetryRequest }) {
     <div className="grid lg:grid-cols-2 gap-8">
       {/* Results */}
       <div className="space-y-6">
-        <div className="bg-white rounded-2xl shadow-lg p-6">
+  <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-6 ring-1 ring-black/5">
           <div className="flex items-center space-x-3 mb-6">
             <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
               <Award className="w-6 h-6 text-green-600" />
@@ -361,7 +361,7 @@ function ResultView({ result, onCopyCode, onRetryRequest }) {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-blue-50 to-emerald-50 rounded-xl p-6 mb-6">
+          <div className="bg-gradient-to-br from-blue-50/80 to-emerald-50/80 dark:from-blue-500/10 dark:to-emerald-500/10 rounded-xl p-6 mb-6">
             <h3 className="text-2xl font-bold gradient-text mb-2">{stream}</h3>
             <div className="flex items-center space-x-4 text-sm text-gray-600">
               <span>Confidence: {confidence}%</span>
@@ -408,7 +408,7 @@ function ResultView({ result, onCopyCode, onRetryRequest }) {
 
         {/* Alternative Paths */}
         {assessment.alternativePaths && assessment.alternativePaths.length > 0 && (
-          <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-6 ring-1 ring-black/5">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Alternative Paths</h3>
             <div className="space-y-3">
               {assessment.alternativePaths.map((alt, index) => (
@@ -427,7 +427,7 @@ function ResultView({ result, onCopyCode, onRetryRequest }) {
 
       {/* AI Roadmap */}
       <div className="space-y-6">
-        <div className="bg-white rounded-2xl shadow-lg p-6">
+  <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-6 ring-1 ring-black/5">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
@@ -442,7 +442,7 @@ function ResultView({ result, onCopyCode, onRetryRequest }) {
             <div className="flex items-center space-x-2">
               <button
                 onClick={onCopyCode}
-                className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-700 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
               >
                 <Copy className="w-4 h-4" />
                 <span>Copy Code</span>

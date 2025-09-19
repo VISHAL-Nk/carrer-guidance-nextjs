@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import SiteHeader from "@/components/SiteHeader";
 import { ToastProvider } from "@/contexts/ToastContext";
+import Chatbot from "@/components/CB/Chatbot";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,11 +39,21 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased relative overflow-x-hidden`}>
+        {/* Global animated background */}
+        <div className="fixed inset-0 -z-10">
+          <div className="aurora-bg" />
+          {/* decorative orbs */}
+          <div className="orb orb-indigo w-64 h-64 top-10 -left-10 animate-float absolute" />
+          <div className="orb orb-pink w-72 h-72 -bottom-10 right-10 animate-float-slow absolute" />
+          <div className="orb orb-emerald w-56 h-56 bottom-20 left-1/3 animate-float absolute" />
+        </div>
         <ToastProvider>
           <AuthProvider>
             <SiteHeader />
             <div className="min-h-[calc(100vh-64px)]">{children}</div>
+            {/* Floating Chatbot widget available globally */}
+            <Chatbot />
           </AuthProvider>
         </ToastProvider>
       </body>

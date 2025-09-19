@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   BookOpen,
@@ -16,6 +17,19 @@ import {
 
 export default function Home() {
   const { user, completion, loading } = useAuth();
+  const [slide, setSlide] = useState(0);
+  const slides = [
+    "/images/WhatsApp Image 2025-09-19 at 3.55.30 PM.jpeg",
+    "/images/WhatsApp Image 2025-09-19 at 3.55.30 PM (1).jpeg",
+    "/images/WhatsApp Image 2025-09-19 at 3.55.31 PM.jpeg",
+    "/images/WhatsApp Image 2025-09-19 at 3.55.30 PM (2).jpeg",
+  ];
+
+  useEffect(() => {
+    if (user) return; // show carousel only for unauthenticated users
+    const id = setInterval(() => setSlide((s) => (s + 1) % slides.length), 3000);
+    return () => clearInterval(id);
+  }, [user, slides.length]);
   const isProfileComplete = completion?.isComplete ?? false;
 
   // Debug logging
@@ -24,16 +38,22 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-blue-50 via-white to-emerald-50 py-20 px-4 sm:px-6 lg:px-8">
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8">
+        {/* decorative background for hero */}
+        <div className="absolute inset-0 -z-10 opacity-80">
+          <div className="aurora-bg" />
+          <div className="orb orb-indigo w-72 h-72 left-8 -top-10 animate-float absolute" />
+          <div className="orb orb-pink w-64 h-64 -right-6 top-16 animate-float-slow absolute" />
+          <div className="orb orb-amber w-56 h-56 left-1/2 bottom-10 animate-float absolute" />
+        </div>
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
-                <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-                  Your <span className="gradient-text">Career Journey</span>{" "}
-                  Starts Here
+                <h1 className="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight">
+                  Your <span className="gradient-text">Career Journey</span> Starts Here
                 </h1>
-                <p className="text-xl text-gray-600 leading-relaxed">
+                <p className="text-lg md:text-xl text-gray-700/90 dark:text-gray-200 leading-relaxed">
                   Discover your perfect career path with AI-powered guidance,
                   personalized recommendations, and comprehensive resources
                   tailored for Indian students.
@@ -45,14 +65,14 @@ export default function Home() {
                   <>
                     <Link
                       href="/guidance"
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold btn-hover transition-all flex items-center justify-center space-x-2"
+                      className="bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-600 hover:from-blue-700 hover:via-indigo-700 hover:to-emerald-700 text-white px-8 py-4 rounded-xl font-semibold btn-hover transition-all flex items-center justify-center space-x-2 shadow shine"
                     >
                       <Target className="w-5 h-5" />
                       <span>Start Career Assessment</span>
                     </Link>
                     <Link
                       href="/college-predictor"
-                      className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 rounded-xl font-semibold transition-all flex items-center justify-center space-x-2"
+                      className="border-2 border-blue-600/80 text-blue-700 dark:text-blue-300 hover:bg-blue-600 hover:text-white px-8 py-4 rounded-xl font-semibold transition-all flex items-center justify-center space-x-2 backdrop-blur-sm"
                     >
                       <GraduationCap className="w-5 h-5" />
                       <span>Predict Colleges</span>
@@ -62,14 +82,14 @@ export default function Home() {
                   <>
                     <Link
                       href="/register"
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold btn-hover transition-all flex items-center justify-center space-x-2"
+                      className="bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-600 hover:from-blue-700 hover:via-indigo-700 hover:to-emerald-700 text-white px-8 py-4 rounded-xl font-semibold btn-hover transition-all flex items-center justify-center space-x-2 shadow shine"
                     >
                       <span>Get Started Free</span>
                       <ArrowRight className="w-5 h-5" />
                     </Link>
                     <Link
                       href="/login"
-                      className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 rounded-xl font-semibold transition-all"
+                      className="border-2 border-blue-600/80 text-blue-700 dark:text-blue-300 hover:bg-blue-600 hover:text-white px-8 py-4 rounded-xl font-semibold transition-all backdrop-blur-sm"
                     >
                       Sign In
                     </Link>
@@ -78,36 +98,36 @@ export default function Home() {
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-8 pt-8 border-t border-gray-200">
+              <div className="grid grid-cols-3 gap-8 pt-8 border-t border-white/40">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">10K+</div>
-                  <div className="text-sm text-gray-600">Students Guided</div>
+                  <div className="text-2xl font-extrabold text-blue-600">10K+</div>
+                  <div className="text-sm text-gray-700/90 dark:text-gray-300">Students Guided</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-emerald-600">
+                  <div className="text-2xl font-extrabold text-emerald-600">
                     500+
                   </div>
-                  <div className="text-sm text-gray-600">Colleges Listed</div>
+                  <div className="text-sm text-gray-700/90 dark:text-gray-300">Colleges Listed</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-600">95%</div>
-                  <div className="text-sm text-gray-600">Success Rate</div>
+                  <div className="text-2xl font-extrabold text-purple-600">95%</div>
+                  <div className="text-sm text-gray-700/90 dark:text-gray-300">Success Rate</div>
                 </div>
               </div>
             </div>
 
             <div className="relative">
-              <div className="bg-white rounded-2xl shadow-2xl p-8 card-hover">
+              <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-2xl p-8 card-hover ring-1 ring-black/5">
                 <div className="space-y-6">
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                       <BookOpen className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100">
                         Smart Assessment
                       </h3>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
                         AI-powered career matching
                       </p>
                     </div>
@@ -117,10 +137,10 @@ export default function Home() {
                       <GraduationCap className="w-6 h-6 text-emerald-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100">
                         College Finder
                       </h3>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
                         Discover perfect institutions
                       </p>
                     </div>
@@ -130,15 +150,19 @@ export default function Home() {
                       <TrendingUp className="w-6 h-6 text-purple-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100">
                         Career Roadmap
                       </h3>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
                         Step-by-step guidance
                       </p>
                     </div>
                   </div>
                 </div>
+              </div>
+              {/* Decorative image on card */}
+              <div className="absolute -top-6 -right-6 w-28 h-28 rotate-12 opacity-80 pointer-events-none">
+                <img src="/globe.svg" alt="Decorative globe" className="w-full h-full object-contain animate-float-slow" />
               </div>
             </div>
           </div>
@@ -147,17 +171,17 @@ export default function Home() {
 
       {/* Dashboard Section for Authenticated Users */}
       {user && (
-        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white/60 dark:bg-[#0b1220]/40 backdrop-blur">
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Profile Completion Card */}
               <div className="lg:col-span-1">
-                <div className="bg-white rounded-2xl shadow-lg p-6 card-hover">
+                <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-6 card-hover ring-1 ring-black/5">
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
                       <Users className="w-5 h-5 text-blue-600" />
                     </div>
-                    <h2 className="text-xl font-semibold text-gray-900">
+                    <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                       Profile Status
                     </h2>
                   </div>
@@ -170,8 +194,8 @@ export default function Home() {
                   ) : (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-gray-600">Completion</span>
-                        <span className="font-semibold text-gray-900">
+                        <span className="text-gray-600 dark:text-gray-300">Completion</span>
+                        <span className="font-semibold text-gray-900 dark:text-gray-100">
                           {Math.round(completion?.percentage ?? 0)}%
                         </span>
                       </div>
@@ -184,7 +208,7 @@ export default function Home() {
                       </div>
 
                       {!isProfileComplete && (
-                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                        <div className="bg-yellow-50/90 border border-yellow-200 rounded-lg p-3">
                           <p className="text-sm text-yellow-800 mb-2">
                             Complete your profile to unlock all features
                           </p>
@@ -212,7 +236,7 @@ export default function Home() {
 
               {/* Dashboard Cards */}
               <div className="lg:col-span-2">
-                <h2 className="text-xl font-bold text-gray-900 mb-4">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                   Your Dashboard
                 </h2>
                 <div className="grid sm:grid-cols-2 gap-4">
@@ -257,14 +281,46 @@ export default function Home() {
         </section>
       )}
 
+      {/* Carousel for unauthenticated users */}
+      {!user && (
+        <section className="px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto">
+            <div className="glass relative overflow-hidden rounded-2xl shadow-xl ring-1 ring-black/5 bg-white/90 dark:bg-[#0b1220]/70 backdrop-blur">
+              <div className="aspect-[16/9] w-full relative">
+                {slides.map((src, idx) => (
+                  <img
+                    key={src}
+                    src={src}
+                    alt={`Slide ${idx + 1}`}
+                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${slide === idx ? 'opacity-100' : 'opacity-0'}`}
+                    loading={idx === 0 ? 'eager' : 'lazy'}
+                  />)
+                )}
+              </div>
+              {/* dots */}
+              <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
+                {slides.map((_, idx) => (
+                  <button
+                    key={idx}
+                    aria-label={`Go to slide ${idx + 1}`}
+                    onClick={() => setSlide(idx)}
+                    className={`w-2.5 h-2.5 rounded-full transition-all ${slide === idx ? 'bg-blue-600 w-6' : 'bg-white/70 dark:bg-white/30'}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Features Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
               Why Choose CareerGuide?
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-700/90 dark:text-gray-200 max-w-3xl mx-auto">
               We combine cutting-edge AI technology with comprehensive career
               resources to provide personalized guidance for every student.
             </p>
@@ -292,7 +348,9 @@ export default function Home() {
 
       {/* CTA Section */}
       {!user && (
-        <section className="py-20 px-4 sm:px-6 lg:px-8 gradient-bg">
+        <section className="py-20 px-4 sm:px-6 lg:px-8 gradient-bg relative overflow-hidden">
+          {/* floating window image */}
+          <img src="/window.svg" alt="Decorative window" className="absolute -right-10 -top-10 w-52 h-52 opacity-30 rotate-12 animate-float-slow pointer-events-none" />
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
               Ready to Discover Your Future?
@@ -303,7 +361,7 @@ export default function Home() {
             </p>
             <Link
               href="/register"
-              className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-xl font-semibold btn-hover transition-all inline-flex items-center space-x-2"
+              className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-xl font-semibold btn-hover transition-all inline-flex items-center space-x-2 shadow shine"
             >
               <span>Start Your Journey Today</span>
               <ArrowRight className="w-5 h-5" />
@@ -333,7 +391,7 @@ function DashboardCard({
 
   if (locked) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg p-6 opacity-60 cursor-not-allowed">
+      <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-6 opacity-60 cursor-not-allowed ring-1 ring-black/5">
         <div className="flex items-center justify-between mb-4">
           <div
             className={`w-12 h-12 ${
@@ -355,7 +413,7 @@ function DashboardCard({
 
   if (comingSoon) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg p-6 opacity-75 cursor-not-allowed">
+      <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-6 opacity-75 cursor-not-allowed ring-1 ring-black/5">
         <div className="flex items-center justify-between mb-4">
           <div
             className={`w-12 h-12 ${
@@ -377,7 +435,7 @@ function DashboardCard({
 
   return (
     <Link href={href} className="block">
-      <div className="bg-white rounded-2xl shadow-lg p-6 card-hover transition-all">
+      <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-6 card-hover transition-all ring-1 ring-black/5">
         <div
           className={`w-12 h-12 ${
             colorClasses[color].split(" ")[1]
@@ -399,11 +457,11 @@ function DashboardCard({
 function FeatureCard({ icon, title, description }) {
   return (
     <div className="text-center p-6">
-      <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+      <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow ring-1 ring-black/5">
         {icon}
       </div>
-      <h3 className="text-xl font-semibold text-gray-900 mb-3">{title}</h3>
-      <p className="text-gray-600 leading-relaxed">{description}</p>
+      <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">{title}</h3>
+      <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{description}</p>
     </div>
   );
 }
