@@ -3,7 +3,6 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import SiteHeader from "@/components/SiteHeader";
 import { ToastProvider } from "@/contexts/ToastContext";
-import Chatbot from "@/components/CB/Chatbot";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -52,8 +51,7 @@ export default function RootLayout({ children }) {
           <AuthProvider>
             <SiteHeader />
             <div className="min-h-[calc(100vh-64px)]">{children}</div>
-            {/* Floating Chatbot widget available globally */}
-            <Chatbot />
+            {/* Chatbot rendered per-page as needed */}
           </AuthProvider>
         </ToastProvider>
       </body>

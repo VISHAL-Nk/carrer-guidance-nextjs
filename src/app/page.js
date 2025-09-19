@@ -14,6 +14,7 @@ import {
   Lock,
   Star,
 } from "lucide-react";
+import Chatbot from "@/components/CB/Chatbot";
 
 export default function Home() {
   const { user, completion, loading } = useAuth();
@@ -280,6 +281,9 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Chatbot: show only on main page when authenticated */}
+      {user && <Chatbot />}
 
       {/* Carousel for unauthenticated users */}
       {!user && (

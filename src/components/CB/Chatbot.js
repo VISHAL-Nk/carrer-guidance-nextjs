@@ -52,6 +52,7 @@ function Chatbot() {
   ]);
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const chatRef = useRef(null);
   const recognitionRef = useRef(null);
 
@@ -89,9 +90,13 @@ function Chatbot() {
     }
   }, [lang]);
 
-  const startVoiceInput = useCallback(() => {
+  const startVoiceInput = useCallback(async () => {
     if (!canUseSpeech) return;
     try {
+      // Request mic permission to improve reliability on some browsers
+      if (navigator?.mediaDevices?.getUserMedia) {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+      }
       const Rec =
         typeof window !== "undefined" &&
         (window.SpeechRecognition || window.webkitSpeechRecognition);
@@ -100,21 +105,28 @@ function Chatbot() {
       recognition.lang = speechLangMap[lang] || "en-US";
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
+      recognition.onstart = () => setIsListening(true);
+      recognition.onend = () => setIsListening(false);
       recognition.onresult = (e) => {
         const speechText = e.results?.[0]?.[0]?.transcript || "";
         if (speechText) {
           setInput(speechText);
-          // send immediately
           setTimeout(() => handleSend(speechText), 0);
         }
       };
-      recognition.onerror = () => {};
+      recognition.onerror = () => setIsListening(false);
       recognitionRef.current = recognition;
       recognition.start();
     } catch (e) {
-      // ignore
+      setIsListening(false);
     }
   }, [canUseSpeech, lang]);
+
+  const stopVoiceInput = useCallback(() => {
+    try {
+      recognitionRef.current?.stop?.();
+    } catch {}
+  }, []);
 
   const handleSend = useCallback(
     async (forcedText) => {
@@ -131,9 +143,11 @@ function Chatbot() {
           body: JSON.stringify({ message: text, lang }),
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        const reply = data?.reply || "Sorry, I couldn't understand that.";
-        setMessages((prev) => [...prev, { sender: "bot", text: reply }]);
+  const data = await res.json();
+  const replyRaw = data?.reply ?? "Sorry, I couldn't understand that.";
+  // Normalize common formatting: preserve newlines and light markdown
+  const reply = String(replyRaw);
+  setMessages((prev) => [...prev, { sender: "bot", text: reply }]);
         speak(reply);
       } catch (err) {
         setMessages((prev) => [
@@ -246,11 +260,11 @@ function Chatbot() {
                 <div
                   className={
                     m.sender === "user"
-                      ? "max-w-[80%] rounded-2xl px-3 py-2 text-sm text-white bg-gradient-to-r from-fuchsia-500 to-indigo-500 shadow"
-                      : "max-w-[80%] rounded-2xl px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white/90 dark:bg-gray-900/60 ring-1 ring-black/5"
+                      ? "max-w-[80%] rounded-2xl px-3 py-2 text-sm text-white bg-gradient-to-r from-fuchsia-500 to-indigo-500 shadow whitespace-pre-wrap"
+                      : "max-w-[80%] rounded-2xl px-3 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white/90 dark:bg-gray-900/60 ring-1 ring-black/5 whitespace-pre-wrap prose prose-sm dark:prose-invert"
                   }
                 >
-                  {m.text}
+                  {formatMessage(m.text)}
                 </div>
               </div>
             ))}
@@ -273,12 +287,12 @@ function Chatbot() {
             />
             <button
               type="button"
-              onClick={startVoiceInput}
+              onClick={isListening ? stopVoiceInput : startVoiceInput}
               disabled={!canUseSpeech}
               title={canUseSpeech ? t.mic : "Speech not supported"}
-              className="px-3 py-2 rounded-xl bg-gray-200/80 dark:bg-gray-700/70 text-gray-800 dark:text-gray-100 hover:bg-gray-200 disabled:opacity-50"
+              className={`px-3 py-2 rounded-xl ${isListening ? 'bg-red-500 text-white' : 'bg-gray-200/80 dark:bg-gray-700/70 text-gray-800 dark:text-gray-100 hover:bg-gray-200'} disabled:opacity-50`}
             >
-              {t.mic}
+              {isListening ? '■' : t.mic}
             </button>
             <button
               type="submit"
@@ -295,3 +309,48 @@ function Chatbot() {
 }
 
 export default Chatbot;
+
+// Lightweight text formatter: supports **bold**, *italic*, and `code`, preserves line breaks.
+// Returns React elements without using dangerouslySetInnerHTML.
+function formatMessage(text) {
+  const parts = [];
+  const lines = String(text).split(/\n/);
+  const pushFormatted = (str, keyBase) => {
+    // Tokenize for code `...`
+    const codeSplit = str.split(/(`[^`]+`)/g);
+    codeSplit.forEach((seg, i) => {
+      if (!seg) return;
+      if (seg.startsWith("`") && seg.endsWith("`")) {
+        parts.push(
+          <code key={`${keyBase}-code-${i}`} className="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 border border-black/10">
+            {seg.slice(1, -1)}
+          </code>
+        );
+      } else {
+        // Bold **...** then italic *...*
+        const boldSplit = seg.split(/(\*\*[^*]+\*\*)/g);
+        boldSplit.forEach((bseg, j) => {
+          if (!bseg) return;
+          if (bseg.startsWith("**") && bseg.endsWith("**")) {
+            parts.push(<strong key={`${keyBase}-b-${i}-${j}`}>{bseg.slice(2, -2)}</strong>);
+          } else {
+            const italicSplit = bseg.split(/(\*[^*]+\*)/g);
+            italicSplit.forEach((iseg, k) => {
+              if (!iseg) return;
+              if (iseg.startsWith("*") && iseg.endsWith("*")) {
+                parts.push(<em key={`${keyBase}-i-${i}-${j}-${k}`}>{iseg.slice(1, -1)}</em>);
+              } else {
+                parts.push(<span key={`${keyBase}-t-${i}-${j}-${k}`}>{iseg}</span>);
+              }
+            });
+          }
+        });
+      }
+    });
+  };
+  lines.forEach((line, idx) => {
+    if (idx > 0) parts.push(<br key={`br-${idx}`} />);
+    pushFormatted(line, `l${idx}`);
+  });
+  return parts;
+}
