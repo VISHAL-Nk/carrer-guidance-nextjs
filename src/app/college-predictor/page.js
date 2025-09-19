@@ -1,297 +1,573 @@
 "use client";
-import { useEffect, useState } from 'react';
-import RequireCompleteProfile from '@/components/RequireCompleteProfile';
-import { 
-  GraduationCap, 
-  MapPin, 
-  Search, 
-  Filter, 
-  Building2,
-  Users,
-  BookOpen
-} from 'lucide-react';
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import {
+  GraduationCap,
+  Target,
+  Loader2,
+  AlertTriangle,
+  Search,
+  RefreshCw,
+  Filter,
+  Info,
+} from "lucide-react";
 
-export default function CollegesPage() {
-  return (
-    <RequireCompleteProfile>
-      <CollegesInner />
-    </RequireCompleteProfile>
-  );
+export default function Page() {
+  const inputClass =
+    "w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white";
+
+  // Form state
+  const [stream, setStream] = useState("");
+  const [exam, setExam] = useState("");
+  const [rank, setRank] = useState("");
+  const [gender, setGender] = useState("");
+  const [quota, setQuota] = useState("");
+  const [category, setCategory] = useState("");
+  const [limit, setLimit] = useState(5);
+
+  // Request state
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [results, setResults] = useState([]);
+  const [submitted, setSubmitted] = useState(false);
+
+  const isScience = stream === "Science";
+  const isJEE = exam === "JEE";
+
+  const disabledBecauseUnderDev = useMemo(() => {
+    if (!stream) return true;
+    if (!isScience) return true;
+    if (!exam) return true;
+    if (!isJEE) return true;
+    return false;
+  }, [stream, exam, isScience, isJEE]);
+
+  const canSubmit = useMemo(() => {
+    if (disabledBecauseUnderDev) return false;
+    const parsedRank = Number(rank);
+    return (
+      stream &&
+      exam &&
+      isScience &&
+      isJEE &&
+      !Number.isNaN(parsedRank) &&
+      parsedRank > 0 &&
+      gender &&
+      quota &&
+      category &&
+      !!limit
+    );
+  }, [
+    disabledBecauseUnderDev,
+    stream,
+    exam,
+    rank,
+    gender,
+    quota,
+    category,
+    limit,
+    isScience,
+    isJEE,
+  ]);
+
+  function resetResults() {
+    setResults([]);
+    setError("");
+    setSubmitted(false);
+  }
+
+  // Add this debug version of handleSubmit to your component
+
+// Replace your handleSubmit function with this updated version
+async function handleSubmit(e) {
+  e.preventDefault();
+  setSubmitted(true);
+  setError("");
+  setLoading(true);
+  setResults([]);
+
+  try {
+    const body = {
+      stream,
+      exam,
+      rank: Number(rank),
+      gender,
+      quota,
+      category,
+      limit: Number(limit),
+    };
+
+    console.log("Frontend - Sending request:", body);
+
+    // Use Next.js API route instead of direct Flask call
+    const res = await fetch("/api/predict", {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    console.log("Frontend - Response status:", res.status);
+
+    if (!res.ok) {
+      let msg = `Request failed (${res.status})`;
+      try {
+        const errorData = await res.json();
+        console.log("Frontend - Error response:", errorData);
+        if (errorData?.message) msg = errorData.message;
+      } catch (parseError) {
+        console.error("Frontend - Error parsing error response:", parseError);
+      }
+      throw new Error(msg);
+    }
+
+    const data = await res.json();
+    console.log("Frontend - Success response:", data);
+    
+    // Handle both direct array and nested response formats
+    const normalized = (Array.isArray(data) ? data : data?.results || data?.data?.colleges || [])
+      .map(normalizeCollegeRecord)
+      .filter(Boolean);
+
+    console.log("Frontend - Normalized results:", normalized);
+    setResults(normalized.slice(0, Number(limit) || 5));
+    
+    if (normalized.length === 0) {
+      setError("No colleges found matching your criteria. Try adjusting your filters.");
+    }
+    
+  } catch (err) {
+    console.error("Frontend - Request error:", err);
+    const msg = (err && typeof err === "object" && "message" in err) ? err.message : String(err);
+    setError(msg);
+  } finally {
+    setLoading(false);
+  }
 }
 
-function CollegesInner() {
-  const [colleges, setColleges] = useState([]);
-  const [filteredColleges, setFilteredColleges] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({
-    search: '',
-    location: '',
-    type: ''
-  });
-  const [meta, setMeta] = useState(null);
-  const [availableFilters, setAvailableFilters] = useState({
-    locations: [],
-    types: []
-  });
-
-  useEffect(() => {
-    loadColleges();
-  }, []);
-
-  useEffect(() => {
-    applyFilters();
-  }, [colleges, filters]);
-
-  async function loadColleges() {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/colleges');
-      const data = await res.json();
-      
-      if (res.ok) {
-        setColleges(data.data.colleges || []);
-        setMeta(data.data);
-        setAvailableFilters({
-          locations: data.data.filters?.locations || [],
-          types: data.data.filters?.types || []
-        });
-      } else {
-        console.error('Failed to load colleges:', data.message);
-      }
-    } catch (error) {
-      console.error('Error loading colleges:', error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function applyFilters() {
-    let filtered = [...colleges];
-
-    if (filters.search) {
-      const searchTerm = filters.search.toLowerCase();
-      filtered = filtered.filter(college =>
-        college.collegeName.toLowerCase().includes(searchTerm) ||
-        college.location.toLowerCase().includes(searchTerm)
-      );
-    }
-
-    if (filters.location) {
-      filtered = filtered.filter(college =>
-        college.location.toLowerCase().includes(filters.location.toLowerCase())
-      );
-    }
-
-    if (filters.type) {
-      filtered = filtered.filter(college =>
-        college.CollegeType.toLowerCase().includes(filters.type.toLowerCase())
-      );
-    }
-
-    setFilteredColleges(filtered);
-  }
-
-  function handleFilterChange(key, value) {
-    setFilters(prev => ({ ...prev, [key]: value }));
-  }
-
-  function clearFilters() {
-    setFilters({ search: '', location: '', type: '' });
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 loading-pulse">
-            <GraduationCap className="w-8 h-8 text-blue-600" />
-          </div>
-          <p className="text-gray-600">Loading colleges...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <GraduationCap className="w-8 h-8 text-blue-600" />
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            College Explorer
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover the perfect educational institutions for your career goals
-          </p>
-          {meta && (
-            <div className="mt-6 inline-flex items-center space-x-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">
-              <BookOpen className="w-4 h-4" />
-              <span>Showing colleges for {meta.userClass} students</span>
-            </div>
-          )}
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-          <div className="grid md:grid-cols-4 gap-4">
-            <div className="md:col-span-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search colleges or locations..."
-                  value={filters.search}
-                  onChange={(e) => handleFilterChange('search', e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                />
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50">
+      <section className="px-4 sm:px-6 lg:px-8 pt-10 pb-6">
+        <div className="max-w-6xl mx-auto">
+          <header className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-blue-600 text-white flex items-center justify-center">
+                <GraduationCap className="w-6 h-6" />
+              </div>
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+                  College Predictor
+                </h1>
+                <p className="text-gray-600">
+                  Find likely colleges and programs based on your rank and
+                  preferences.
+                </p>
               </div>
             </div>
-            
-            <div>
-              <select
-                value={filters.location}
-                onChange={(e) => handleFilterChange('location', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              >
-                <option value="">All Locations</option>
-                {availableFilters.locations.map(location => (
-                  <option key={location} value={location}>{location}</option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <select
-                value={filters.type}
-                onChange={(e) => handleFilterChange('type', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-              >
-                <option value="">All Types</option>
-                {availableFilters.types.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-          
-          {(filters.search || filters.location || filters.type) && (
-            <div className="mt-4 flex items-center justify-between">
-              <span className="text-sm text-gray-600">
-                Showing {filteredColleges.length} of {colleges.length} colleges
-              </span>
-              <button
-                onClick={clearFilters}
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
-              >
-                Clear Filters
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-              <Building2 className="w-6 h-6 text-blue-600" />
-            </div>
-            <div className="text-2xl font-bold text-gray-900">{filteredColleges.length}</div>
-            <div className="text-gray-600">Available Colleges</div>
-          </div>
-          
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
-            <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-              <MapPin className="w-6 h-6 text-emerald-600" />
-            </div>
-            <div className="text-2xl font-bold text-gray-900">{availableFilters.locations.length}</div>
-            <div className="text-gray-600">Locations</div>
-          </div>
-          
-          <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
-            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">
-              <Users className="w-6 h-6 text-purple-600" />
-            </div>
-            <div className="text-2xl font-bold text-gray-900">{availableFilters.types.length}</div>
-            <div className="text-gray-600">College Types</div>
-          </div>
-        </div>
-
-        {/* Colleges Grid */}
-        {filteredColleges.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-gray-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No colleges found</h3>
-            <p className="text-gray-600 mb-4">
-              Try adjusting your search criteria or clearing the filters.
-            </p>
-            <button
-              onClick={clearFilters}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium btn-hover transition-all"
+            <Link
+              href="/"
+              className="text-blue-700 hover:text-blue-800 font-medium hidden sm:inline-flex"
             >
-              Clear Filters
-            </button>
+              Home
+            </Link>
+          </header>
+
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Filters/Form */}
+            <div className="lg:col-span-1">
+              <form
+                onSubmit={handleSubmit}
+                className="bg-white rounded-2xl shadow-lg p-6"
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <Filter className="w-4 h-4 text-blue-600" />
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Your Details
+                  </h2>
+                </div>
+
+                {/* Stream */}
+                <Field label="Stream" required>
+                  <select
+                    className={inputClass}
+                    value={stream}
+                    onChange={(e) => {
+                      setStream(e.target.value);
+                      setExam("");
+                      setGender("");
+                      setQuota("");
+                      setCategory("");
+                      setRank("");
+                      resetResults();
+                    }}
+                  >
+                    <option value="" disabled>
+                      Select stream
+                    </option>
+                    <option>Science</option>
+                    <option>Commerce</option>
+                    <option>Arts</option>
+                  </select>
+                </Field>
+
+                {/* Stream under development notice */}
+                {stream && !isScience && (
+                  <UnderDevNote text="Only Science stream is supported right now. Other streams are under development." />
+                )}
+
+                {/* Exam (only when Science) */}
+                {isScience && (
+                  <Field label="Entrance Exam" required>
+                    <select
+                      className={inputClass}
+                      value={exam}
+                      onChange={(e) => {
+                        setExam(e.target.value);
+                        setGender("");
+                        setQuota("");
+                        setCategory("");
+                        setRank("");
+                        resetResults();
+                      }}
+                    >
+                      <option value="" disabled>
+                        Select exam
+                      </option>
+                      <option>JEE</option>
+                      <option>NEET</option>
+                      <option>JKCET</option>
+                    </select>
+                  </Field>
+                )}
+
+                {/* Exam under development notice */}
+                {isScience && exam && !isJEE && (
+                  <UnderDevNote text="Only JEE is supported right now. Other exams are under development." />
+                )}
+
+                {/* Remaining fields only when Science + JEE */}
+                {isScience && isJEE && (
+                  <>
+                    <Field
+                      label="Rank"
+                      required
+                      helper="Enter your All India Rank (AIR)"
+                    >
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        min={1}
+                        placeholder="e.g., 25467"
+                        className={inputClass}
+                        value={rank}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          if (!v || Number(v) >= 0) setRank(v);
+                          resetResults();
+                        }}
+                      />
+                    </Field>
+
+                    <Field label="Gender" required>
+                      <select
+                        className={inputClass}
+                        value={gender}
+                        onChange={(e) => {
+                          setGender(e.target.value);
+                          resetResults();
+                        }}
+                      >
+                        <option value="" disabled>
+                          Select gender
+                        </option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                      </select>
+                    </Field>
+
+                    <Field label="Quota" required>
+                      <select
+                        className={inputClass}
+                        value={quota}
+                        onChange={(e) => {
+                          setQuota(e.target.value);
+                          resetResults();
+                        }}
+                      >
+                        <option value="" disabled>
+                          Select quota
+                        </option>
+                        <option>All India</option>
+                        <option>Home State</option>
+                        <option>Government</option>
+                        <option>J&K</option>
+                        <option>Ladakh</option>
+                        <option>Other</option>
+                      </select>
+                    </Field>
+
+                    <Field label="Category" required>
+                      <select
+                        className={inputClass}
+                        value={category}
+                        onChange={(e) => {
+                          setCategory(e.target.value);
+                          resetResults();
+                        }}
+                      >
+                        <option value="" disabled>
+                          Select category
+                        </option>
+                        <option>Open</option>
+                        <option>EWS</option>
+                        <option>OBC-NCL</option>
+                        <option>SC</option>
+                        <option>ST</option>
+                        <option>PWD</option>
+                      </select>
+                    </Field>
+
+                    <Field label="No. of colleges to display" required>
+                      <select
+                        className={inputClass}
+                        value={limit}
+                        onChange={(e) => {
+                          setLimit(Number(e.target.value));
+                          resetResults();
+                        }}
+                      >
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={15}>15</option>
+                      </select>
+                    </Field>
+                  </>
+                )}
+
+                <button
+                  type="submit"
+                  className="w-full mt-2 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                  disabled={!canSubmit || loading}
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Predicting...
+                    </>
+                  ) : (
+                    <>
+                      <Search className="w-5 h-5" />
+                      Predict Colleges
+                    </>
+                  )}
+                </button>
+
+                {submitted && !canSubmit && (
+                  <p className="mt-3 text-sm text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-lg p-2">
+                    Please complete the form with valid values. Only Science →
+                    JEE flow is supported right now.
+                  </p>
+                )}
+
+                {error && (
+                  <div className="mt-4 flex items-start gap-3 text-red-700 bg-red-50 border border-red-200 rounded-lg p-3">
+                    <AlertTriangle className="w-5 h-5 mt-0.5" />
+                    <div>
+                      <p className="font-medium">Request error</p>
+                      <p className="text-sm leading-5">{error}</p>
+                    </div>
+                  </div>
+                )}
+              </form>
+
+              <div className="mt-4 text-sm text-gray-600 bg-white border border-gray-200 rounded-2xl p-4 flex gap-2">
+                <Info className="w-4 h-4 text-gray-500 mt-1" />
+                <p>
+                  This tool sends your preferences to your local backend at
+                  <span className="font-mono"> http://localhost:8080/predict</span>.
+                  Ensure it is running and CORS is enabled.
+                </p>
+              </div>
+            </div>
+
+            {/* Results */}
+            <div className="lg:col-span-2">
+              <div className="bg-white rounded-2xl shadow-lg p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Target className="w-5 h-5 text-emerald-600" />
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      Predicted Colleges
+                    </h2>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={resetResults}
+                    className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+                    title="Clear results"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Clear
+                  </button>
+                </div>
+
+                {!results.length && !loading && !error && (
+                  <div className="text-center py-12 text-gray-600">
+                    <p>
+                      Fill the form and click Predict to see matched colleges.
+                    </p>
+                  </div>
+                )}
+
+                {results.length > 0 && (
+                  <div className="overflow-x-auto -mx-4 sm:mx-0">
+                    <table className="min-w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-gray-50 text-gray-700 text-sm">
+                          <Th>College</Th>
+                          <Th>Program</Th>
+                          <Th>Quota</Th>
+                          <Th>Seat Type</Th>
+                          <Th>Gender</Th>
+                          <Th className="text-right">Opening Rank</Th>
+                          <Th className="text-right">Closing Rank</Th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {results.map((r, idx) => (
+                          <tr
+                            key={`${r.college}-${r.program}-${idx}`}
+                            className={
+                              idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                            }
+                          >
+                            <Td>
+                              <div className="font-medium text-gray-900">
+                                {r.college}
+                              </div>
+                              {r.campus && (
+                                <div className="text-xs text-gray-500">
+                                  {r.campus}
+                                </div>
+                              )}
+                            </Td>
+                            <Td>{r.program}</Td>
+                            <Td>{r.quota}</Td>
+                            <Td>{r.seatType}</Td>
+                            <Td>{r.gender}</Td>
+                            <Td className="text-right tabular-nums">
+                              {fmtRank(r.openingRank)}
+                            </Td>
+                            <Td className="text-right tabular-nums">
+                              {fmtRank(r.closingRank)}
+                            </Td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        ) : (
-          <div className="grid gap-6">
-            {filteredColleges.map((college) => (
-              <CollegeCard key={college.id} college={college} />
-            ))}
-          </div>
-        )}
-      </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+// Small UI primitives
+function Field({ label, required, helper, children }) {
+  return (
+    <div className="mb-4">
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        {label} {required && <span className="text-red-600">*</span>}
+      </label>
+      {children}
+      {helper && <p className="mt-1 text-xs text-gray-500">{helper}</p>}
     </div>
   );
 }
 
-function CollegeCard({ college }) {
-  const getTypeColor = (type) => {
-    const colors = {
-      'Degree College': 'bg-blue-100 text-blue-800',
-      'Medical College': 'bg-red-100 text-red-800',
-      'Engineering College': 'bg-green-100 text-green-800',
-      'Nursing College': 'bg-pink-100 text-pink-800',
-      'Dental College': 'bg-purple-100 text-purple-800',
-      'Teacher Education College': 'bg-yellow-100 text-yellow-800',
-      'Polytechnic': 'bg-indigo-100 text-indigo-800',
-      'ITI': 'bg-orange-100 text-orange-800',
-    };
-    return colors[type] || 'bg-gray-100 text-gray-800';
-  };
-
+function UnderDevNote({ text }) {
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 card-hover transition-all">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex-1">
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            {college.collegeName}
-          </h3>
-          <div className="flex items-center space-x-4 text-gray-600">
-            <div className="flex items-center space-x-1">
-              <MapPin className="w-4 h-4" />
-              <span className="text-sm">{college.location}</span>
-            </div>
-          </div>
-        </div>
-        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getTypeColor(college.CollegeType)}`}>
-          {college.CollegeType}
-        </span>
-      </div>
-      
-      <div className="border-t border-gray-100 pt-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4 text-sm text-gray-500">
-            <span>Government Institution</span>
-          </div>
-          <button className="text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors">
-            Learn More →
-          </button>
-        </div>
-      </div>
+    <div className="mb-4 text-sm text-yellow-800 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+      {text}
     </div>
   );
+}
+
+function Th({ children, className = "" }) {
+  return <th className={`px-4 py-3 font-semibold ${className}`}>{children}</th>;
+}
+
+function Td({ children, className = "" }) {
+  return (
+    <td className={`px-4 py-3 align-top text-sm text-gray-800 ${className}`}>
+      {children}
+    </td>
+  );
+}
+
+// Helpers
+function fmtRank(n) {
+  if (n === undefined || n === null || n === "") return "—";
+  const num = Number(n);
+  if (Number.isNaN(num)) return String(n);
+  return num.toLocaleString("en-IN");
+}
+
+function normalizeCollegeRecord(item) {
+  if (!item || typeof item !== "object") return null;
+  const val = (obj, keys, fallback = "") => {
+    for (const k of keys) {
+      if (obj[k] !== undefined && obj[k] !== null && obj[k] !== "")
+        return obj[k];
+      const lower = Object.keys(obj).find(
+        (kk) => kk.toLowerCase() === k.toLowerCase()
+      );
+      if (lower && obj[lower] !== undefined) return obj[lower];
+    }
+    return fallback;
+  };
+
+  const college = val(item, [
+    "college_name",
+    "college",
+    "institute",
+    "institute_name",
+  ]);
+  const campus = val(item, ["campus", "location"], "");
+  const program = val(item, [
+    "academic_program_name",
+    "program",
+    "branch",
+    "course",
+  ]);
+  const quota = val(item, ["quota"], "");
+  const seatType = val(item, ["seat_type", "seatType", "seat"], "");
+  const gender = val(item, ["gender"], "");
+  const openingRank = val(
+    item,
+    ["opening_rank", "openingRank", "open_rank", "opening"],
+    ""
+  );
+  const closingRank = val(
+    item,
+    ["closing_rank", "closingRank", "close_rank", "closing"],
+    ""
+  );
+
+  return {
+    college,
+    campus,
+    program,
+    quota,
+    seatType,
+    gender,
+    openingRank,
+    closingRank,
+  };
 }

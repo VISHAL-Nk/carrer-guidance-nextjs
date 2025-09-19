@@ -51,11 +51,11 @@ export default function Home() {
                       <span>Start Career Assessment</span>
                     </Link>
                     <Link
-                      href="/colleges"
+                      href="/college-predictor"
                       className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 rounded-xl font-semibold transition-all flex items-center justify-center space-x-2"
                     >
                       <GraduationCap className="w-5 h-5" />
-                      <span>Explore Colleges</span>
+                      <span>Predict Colleges</span>
                     </Link>
                   </>
                 ) : (

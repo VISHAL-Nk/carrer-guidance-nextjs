@@ -22,6 +22,18 @@ export function middleware(request) {
   response.headers.set('X-XSS-Protection', '1; mode=block');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  // Build a CSP with dev-friendly connect-src when not in production
+  const isProd = process.env.NODE_ENV === 'production';
+  const connectSrc = [
+    "'self'",
+    // Enable websockets for Next dev server and React refresh
+    ...(isProd ? [] : ['ws:', 'wss:']),
+    // Allow local Python/Flask backend during development
+    ...(isProd
+      ? []
+      : ['http://localhost:8080', 'http://127.0.0.1:8080'])
+  ].join(' ');
+
   response.headers.set(
     'Content-Security-Policy',
     [
@@ -34,8 +46,8 @@ export function middleware(request) {
       "img-src 'self' data: https:",
       // Allow fonts from self and data URLs
       "font-src 'self' data:",
-      // Allow connections to self for API calls
-      "connect-src 'self'",
+      // Allow connections
+      `connect-src ${connectSrc}`,
       // Allow media from self
       "media-src 'self'",
       // Block object and frame sources for security
