@@ -1,25 +1,25 @@
 "use client";
-import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
-import { 
-  BookOpen, 
-  GraduationCap, 
-  Target, 
-  Award, 
-  TrendingUp, 
-  Users, 
-  CheckCircle, 
+import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  BookOpen,
+  GraduationCap,
+  Target,
+  Award,
+  TrendingUp,
+  Users,
+  CheckCircle,
   ArrowRight,
   Lock,
-  Star
-} from 'lucide-react';
+  Star,
+} from "lucide-react";
 
 export default function Home() {
   const { user, completion, loading } = useAuth();
   const isProfileComplete = completion?.isComplete ?? false;
 
   // Debug logging
-  console.log('Home page - Auth state:', { user: !!user, loading, completion });
+  console.log("Home page - Auth state:", { user: !!user, loading, completion });
 
   return (
     <main className="min-h-screen">
@@ -30,11 +30,13 @@ export default function Home() {
             <div className="space-y-8">
               <div className="space-y-4">
                 <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-                  Your <span className="gradient-text">Career Journey</span> Starts Here
+                  Your <span className="gradient-text">Career Journey</span>{" "}
+                  Starts Here
                 </h1>
                 <p className="text-xl text-gray-600 leading-relaxed">
-                  Discover your perfect career path with AI-powered guidance, personalized recommendations, 
-                  and comprehensive resources tailored for Indian students.
+                  Discover your perfect career path with AI-powered guidance,
+                  personalized recommendations, and comprehensive resources
+                  tailored for Indian students.
                 </p>
               </div>
 
@@ -82,7 +84,9 @@ export default function Home() {
                   <div className="text-sm text-gray-600">Students Guided</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-emerald-600">500+</div>
+                  <div className="text-2xl font-bold text-emerald-600">
+                    500+
+                  </div>
                   <div className="text-sm text-gray-600">Colleges Listed</div>
                 </div>
                 <div className="text-center">
@@ -100,8 +104,12 @@ export default function Home() {
                       <BookOpen className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">Smart Assessment</h3>
-                      <p className="text-sm text-gray-600">AI-powered career matching</p>
+                      <h3 className="font-semibold text-gray-900">
+                        Smart Assessment
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        AI-powered career matching
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
@@ -109,8 +117,12 @@ export default function Home() {
                       <GraduationCap className="w-6 h-6 text-emerald-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">College Finder</h3>
-                      <p className="text-sm text-gray-600">Discover perfect institutions</p>
+                      <h3 className="font-semibold text-gray-900">
+                        College Finder
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Discover perfect institutions
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
@@ -118,8 +130,12 @@ export default function Home() {
                       <TrendingUp className="w-6 h-6 text-purple-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">Career Roadmap</h3>
-                      <p className="text-sm text-gray-600">Step-by-step guidance</p>
+                      <h3 className="font-semibold text-gray-900">
+                        Career Roadmap
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Step-by-step guidance
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -141,9 +157,11 @@ export default function Home() {
                     <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
                       <Users className="w-5 h-5 text-blue-600" />
                     </div>
-                    <h2 className="text-xl font-semibold text-gray-900">Profile Status</h2>
+                    <h2 className="text-xl font-semibold text-gray-900">
+                      Profile Status
+                    </h2>
                   </div>
-                  
+
                   {loading ? (
                     <div className="space-y-3">
                       <div className="h-4 bg-gray-200 rounded loading-pulse"></div>
@@ -157,14 +175,14 @@ export default function Home() {
                           {Math.round(completion?.percentage ?? 0)}%
                         </span>
                       </div>
-                      
+
                       <div className="w-full bg-gray-200 rounded-full h-3">
                         <div
                           className="bg-gradient-to-r from-blue-500 to-emerald-500 h-3 rounded-full progress-bar"
                           style={{ width: `${completion?.percentage ?? 0}%` }}
                         ></div>
                       </div>
-                      
+
                       {!isProfileComplete && (
                         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                           <p className="text-sm text-yellow-800 mb-2">
@@ -178,11 +196,13 @@ export default function Home() {
                           </Link>
                         </div>
                       )}
-                      
+
                       {isProfileComplete && (
                         <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center space-x-2">
                           <CheckCircle className="w-4 h-4 text-green-600" />
-                          <p className="text-sm text-green-800">Profile Complete!</p>
+                          <p className="text-sm text-green-800">
+                            Profile Complete!
+                          </p>
                         </div>
                       )}
                     </div>
@@ -192,29 +212,31 @@ export default function Home() {
 
               {/* Dashboard Cards */}
               <div className="lg:col-span-2">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Dashboard</h2>
-                <div className="grid sm:grid-cols-2 gap-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">
+                  Your Dashboard
+                </h2>
+                <div className="grid sm:grid-cols-2 gap-4">
                   <DashboardCard
                     href="/guidance"
                     title="Career Guidance"
-                    description="Take our AI-powered assessment to discover your ideal career path"
-                    icon={<Target className="w-6 h-6" />}
+                    description="AI-powered career assessment"
+                    icon={<Target className="w-5 h-5" />}
                     color="blue"
                     locked={!isProfileComplete}
                   />
                   <DashboardCard
-                    href="/colleges"
-                    title="College Explorer"
-                    description="Find the perfect colleges and institutions for your goals"
-                    icon={<GraduationCap className="w-6 h-6" />}
+                    href="/college-predictor"
+                    title="College Predictor"
+                    description="Personalized college recommendations"
+                    icon={<GraduationCap className="w-5 h-5" />}
                     color="emerald"
                     locked={!isProfileComplete}
                   />
                   <DashboardCard
                     href="/interest"
                     title="Interest Selection"
-                    description="Explore your interests and match them with career options"
-                    icon={<Star className="w-6 h-6" />}
+                    description="Match interests with careers"
+                    icon={<Star className="w-5 h-5" />}
                     color="purple"
                     locked={!isProfileComplete}
                     comingSoon
@@ -222,8 +244,8 @@ export default function Home() {
                   <DashboardCard
                     href="/scholarships"
                     title="Scholarships"
-                    description="Discover funding opportunities for your education"
-                    icon={<Award className="w-6 h-6" />}
+                    description="Find funding opportunities"
+                    icon={<Award className="w-5 h-5" />}
                     color="orange"
                     locked={!isProfileComplete}
                     comingSoon
@@ -243,8 +265,8 @@ export default function Home() {
               Why Choose CareerGuide?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We combine cutting-edge AI technology with comprehensive career resources 
-              to provide personalized guidance for every student.
+              We combine cutting-edge AI technology with comprehensive career
+              resources to provide personalized guidance for every student.
             </p>
           </div>
 
@@ -276,7 +298,8 @@ export default function Home() {
               Ready to Discover Your Future?
             </h2>
             <p className="text-xl text-blue-100 mb-8">
-              Join thousands of students who have found their perfect career path with CareerGuide.
+              Join thousands of students who have found their perfect career
+              path with CareerGuide.
             </p>
             <Link
               href="/register"
@@ -292,19 +315,31 @@ export default function Home() {
   );
 }
 
-function DashboardCard({ href, title, description, icon, color, locked, comingSoon }) {
+function DashboardCard({
+  href,
+  title,
+  description,
+  icon,
+  color,
+  locked,
+  comingSoon,
+}) {
   const colorClasses = {
-    blue: 'from-blue-500 to-blue-600 bg-blue-50 text-blue-600',
-    emerald: 'from-emerald-500 to-emerald-600 bg-emerald-50 text-emerald-600',
-    purple: 'from-purple-500 to-purple-600 bg-purple-50 text-purple-600',
-    orange: 'from-orange-500 to-orange-600 bg-orange-50 text-orange-600',
+    blue: "from-blue-500 to-blue-600 bg-blue-50 text-blue-600",
+    emerald: "from-emerald-500 to-emerald-600 bg-emerald-50 text-emerald-600",
+    purple: "from-purple-500 to-purple-600 bg-purple-50 text-purple-600",
+    orange: "from-orange-500 to-orange-600 bg-orange-50 text-orange-600",
   };
 
   if (locked) {
     return (
       <div className="bg-white rounded-2xl shadow-lg p-6 opacity-60 cursor-not-allowed">
         <div className="flex items-center justify-between mb-4">
-          <div className={`w-12 h-12 ${colorClasses[color].split(' ')[1]} rounded-xl flex items-center justify-center`}>
+          <div
+            className={`w-12 h-12 ${
+              colorClasses[color].split(" ")[1]
+            } rounded-xl flex items-center justify-center`}
+          >
             {icon}
           </div>
           <Lock className="w-5 h-5 text-gray-400" />
@@ -322,7 +357,11 @@ function DashboardCard({ href, title, description, icon, color, locked, comingSo
     return (
       <div className="bg-white rounded-2xl shadow-lg p-6 opacity-75 cursor-not-allowed">
         <div className="flex items-center justify-between mb-4">
-          <div className={`w-12 h-12 ${colorClasses[color].split(' ')[1]} rounded-xl flex items-center justify-center`}>
+          <div
+            className={`w-12 h-12 ${
+              colorClasses[color].split(" ")[1]
+            } rounded-xl flex items-center justify-center`}
+          >
             {icon}
           </div>
           <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full font-medium">
@@ -331,9 +370,7 @@ function DashboardCard({ href, title, description, icon, color, locked, comingSo
         </div>
         <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
         <p className="text-gray-600 mb-4">{description}</p>
-        <div className="text-sm text-gray-500">
-          Updates are underway
-        </div>
+        <div className="text-sm text-gray-500">Updates are underway</div>
       </div>
     );
   }
@@ -341,7 +378,11 @@ function DashboardCard({ href, title, description, icon, color, locked, comingSo
   return (
     <Link href={href} className="block">
       <div className="bg-white rounded-2xl shadow-lg p-6 card-hover transition-all">
-        <div className={`w-12 h-12 ${colorClasses[color].split(' ')[1]} rounded-xl flex items-center justify-center mb-4`}>
+        <div
+          className={`w-12 h-12 ${
+            colorClasses[color].split(" ")[1]
+          } rounded-xl flex items-center justify-center mb-4`}
+        >
           {icon}
         </div>
         <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
