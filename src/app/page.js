@@ -190,6 +190,7 @@ export default function Home() {
                       Profile Status
                     </h2>
                   </div>
+                  
 
                   {loading ? (
                     <div className="space-y-3">
@@ -225,6 +226,7 @@ export default function Home() {
                           </Link>
                         </div>
                       )}
+                      
 
                       {isProfileComplete && (
                         <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center space-x-2">
@@ -235,9 +237,20 @@ export default function Home() {
                         </div>
                       )}
                     </div>
+                    
                   )}
+                  
                 </div>
+                <DashboardCard
+                    href="/guidance"
+                    title="Study Material"
+                    description="Curated resources for exams"
+                    icon={<BookOpen className="w-5 h-5" />}
+                    color="blue"
+                    locked={!isProfileComplete}
+                  />
               </div>
+              
 
               {/* Dashboard Cards */}
               <div className="lg:col-span-2">

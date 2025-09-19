@@ -1,167 +1,142 @@
-// Ported from Backend/data/question10.js
-
-const questionCategories = {
-  INTERESTS: 'interests',
-  SKILLS: 'skills',
-  ACADEMICS: 'academics',
-  PERSONALITY: 'personality',
-  FUTURE_GOALS: 'future_goals',
-};
-
-const careerQuestions = [
+// Source questions with lettered options (a-e)
+export const carrerQuestions = [
   {
     id: 1,
-    category: questionCategories.INTERESTS,
-    question: 'Which subject do you find most interesting?',
-    options: [
-      { value: 'science', text: 'Science (Physics, Chemistry, Biology)', weight: { science: 3, commerce: 1, arts: 1 } },
-      { value: 'math', text: 'Mathematics', weight: { science: 3, commerce: 2, arts: 0 } },
-      { value: 'social', text: 'Social Studies/History', weight: { arts: 3, commerce: 1, science: 0 } },
-      { value: 'languages', text: 'Languages and Literature', weight: { arts: 3, commerce: 1, science: 0 } },
-      { value: 'accounts', text: 'Accounts/Business Studies', weight: { commerce: 3, arts: 1, science: 0 } },
-    ],
+    question: "During a weekend, you would prefer to:",
+    options: {
+      a: "Build or repair something with your hands",
+      b: "Read about scientific discoveries or research",
+      c: "Create art, write poetry, or compose music",
+      d: "Organize a community event or help neighbors",
+      e: "Start a small business selling homemade items",
+    },
   },
   {
     id: 2,
-    category: questionCategories.INTERESTS,
-    question: 'What type of activities do you enjoy most?',
-    options: [
-      { value: 'experiments', text: 'Conducting experiments and research', weight: { science: 3, diploma: 2, vocational: 1 } },
-      { value: 'business', text: 'Business and entrepreneurship', weight: { commerce: 3, diploma: 1, vocational: 2 } },
-      { value: 'creative', text: 'Creative writing, art, or cultural activities', weight: { arts: 3, vocational: 2, commerce: 0 } },
-      { value: 'technical', text: 'Working with machines or technology', weight: { diploma: 3, vocational: 3, science: 2 } },
-      { value: 'helping', text: 'Helping and teaching others', weight: { arts: 2, science: 1, commerce: 1 } },
-    ],
+    question: "When your family is planning a vacation, you naturally:",
+    options: {
+      a: "Research the practical aspects like transport and accommodation",
+      b: "Study the history and geography of the destination",
+      c: "Look for museums, cultural sites, and local art",
+      d: "Plan group activities that everyone can enjoy together",
+      e: "Calculate the budget and find the best deals",
+    },
   },
   {
     id: 3,
-    category: questionCategories.ACADEMICS,
-    question: 'What was your strongest subject in SSLC?',
-    options: [
-      { value: 'science_math', text: 'Science and Mathematics', weight: { science: 3, diploma: 2, commerce: 1 } },
-      { value: 'social_lang', text: 'Social Science and Languages', weight: { arts: 3, commerce: 2, science: 0 } },
-      { value: 'all_equal', text: 'All subjects equally', weight: { commerce: 2, arts: 2, science: 2 } },
-      { value: 'practical', text: 'Practical subjects/Activities', weight: { vocational: 3, diploma: 3, arts: 1 } },
-    ],
+    question: "Your natural approach to solving problems is:",
+    options: {
+      a: "Using practical, hands-on methods",
+      b: "Analyzing data and finding logical solutions",
+      c: "Thinking outside the box with innovative ideas",
+      d: "Bringing people together to find collaborative solutions",
+      e: "Finding the most efficient and profitable approach",
+    },
   },
   {
     id: 4,
-    category: questionCategories.FUTURE_GOALS,
-    question: 'What is your primary career goal?',
-    options: [
-      { value: 'doctor_engineer', text: 'Become a Doctor/Engineer', weight: { science: 4, diploma: 1, commerce: 0 } },
-      { value: 'business_ca', text: 'Start a business or become CA/CS', weight: { commerce: 4, arts: 1, science: 0 } },
-      { value: 'teacher_ias', text: 'Become a teacher/IAS officer', weight: { arts: 3, commerce: 2, science: 1 } },
-      { value: 'quick_job', text: 'Get a job quickly after studies', weight: { diploma: 4, vocational: 4, commerce: 1 } },
-      { value: 'creative_field', text: 'Work in creative fields', weight: { arts: 4, vocational: 2, commerce: 0 } },
-    ],
+    question: "In your free time, you enjoy:",
+    options: {
+      a: "Building things, gardening, or outdoor activities",
+      b: "Reading, researching topics online, or solving puzzles",
+      c: "Drawing, music, writing, or other creative hobbies",
+      d: "Spending time with friends and helping others",
+      e: "Planning events, managing social media, or learning about business",
+    },
   },
   {
     id: 5,
-    category: questionCategories.SKILLS,
-    question: 'Which skill describes you best?',
-    options: [
-      { value: 'analytical', text: 'Analytical and logical thinking', weight: { science: 3, commerce: 2, diploma: 1 } },
-      { value: 'communication', text: 'Good communication and presentation', weight: { arts: 3, commerce: 2, science: 1 } },
-      { value: 'practical', text: 'Hands-on and practical work', weight: { vocational: 4, diploma: 3, science: 1 } },
-      { value: 'leadership', text: 'Leadership and management', weight: { commerce: 3, arts: 2, science: 1 } },
-      { value: 'creative', text: 'Creative and artistic abilities', weight: { arts: 4, vocational: 2, commerce: 0 } },
-    ],
+    question: "When making decisions, you primarily consider:",
+    options: {
+      a: "What works best practically and efficiently",
+      b: "What the evidence and logical analysis suggest",
+      c: "What feels right intuitively and aligns with your values",
+      d: "How it will affect others and contribute to the greater good",
+      e: "What will lead to the best opportunities and outcomes",
+    },
   },
   {
     id: 6,
-    category: questionCategories.ACADEMICS,
-    question: 'How do you prefer to learn?',
-    options: [
-      { value: 'theory', text: 'Through theory and concepts', weight: { science: 3, arts: 2, commerce: 2 } },
-      { value: 'practical', text: 'Through hands-on practice', weight: { diploma: 3, vocational: 4, science: 1 } },
-      { value: 'discussion', text: 'Through group discussions', weight: { arts: 3, commerce: 2, science: 1 } },
-      { value: 'mixed', text: 'Combination of theory and practical', weight: { commerce: 3, science: 2, diploma: 2 } },
-    ],
+    question: "When faced with a difficult task, you:",
+    options: {
+      a: "Break it down into manageable, practical steps",
+      b: "Research thoroughly and create a systematic approach",
+      c: "Look for creative and unconventional solutions",
+      d: "Seek input and support from others",
+      e: "Focus on the end goal and find the most strategic path",
+    },
   },
   {
     id: 7,
-    category: questionCategories.PERSONALITY,
-    question: 'Which environment do you prefer to work in?',
-    options: [
-      { value: 'lab_research', text: 'Laboratory or research facility', weight: { science: 4, diploma: 1, commerce: 0 } },
-      { value: 'office', text: 'Office environment', weight: { commerce: 3, arts: 2, science: 1 } },
-      { value: 'field_outdoor', text: 'Field work or outdoor', weight: { vocational: 3, diploma: 2, arts: 1 } },
-      { value: 'creative_space', text: 'Creative studios or cultural spaces', weight: { arts: 4, vocational: 2, commerce: 0 } },
-      { value: 'workshop', text: 'Workshop or technical facility', weight: { diploma: 4, vocational: 3, science: 1 } },
-    ],
+    question: "When choosing a career, your top priority would be:",
+    options: {
+      a: "Job security and practical skills that are always needed",
+      b: "Intellectual challenge and opportunities for continuous learning",
+      c: "Creative fulfillment and personal expression",
+      d: "Making a positive impact on people's lives",
+      e: "Financial success and leadership opportunities",
+    },
   },
   {
     id: 8,
-    category: questionCategories.FUTURE_GOALS,
-    question: 'How long are you willing to study after SSLC?',
-    options: [
-      { value: 'long_term', text: '5+ years (Professional courses)', weight: { science: 4, arts: 2, commerce: 2 } },
-      { value: 'medium_term', text: '3-4 years (Degree courses)', weight: { commerce: 3, arts: 3, science: 2 } },
-      { value: 'short_term', text: '1-2 years (Quick certification)', weight: { diploma: 4, vocational: 4, commerce: 1 } },
-      { value: 'flexible', text: 'Flexible, depends on opportunities', weight: { commerce: 2, arts: 2, diploma: 2 } },
-    ],
+    question: "Your approach to teamwork is:",
+    options: {
+      a: "Contributing practical skills and getting things done",
+      b: "Providing research, analysis, and technical expertise",
+      c: "Bringing creative ideas and innovative perspectives",
+      d: "Facilitating communication and ensuring everyone is included",
+      e: "Taking leadership roles and driving toward objectives",
+    },
+  },
+  {
+    id: 9,
+    question: "When choosing extracurricular activities, you're drawn to:",
+    options: {
+      a: "Sports, technical clubs, or hands-on competitions",
+      b: "Academic clubs, research projects, or intellectual competitions",
+      c: "Arts clubs, creative writing, music, or cultural activities",
+      d: "Student government, volunteering, or social service clubs",
+      e: "Business clubs, entrepreneurship activities, or leadership roles",
+    },
+  },
+  {
+    id: 10,
+    question: "Your approach to money and financial planning is:",
+    options: {
+      a: "Saving for practical purchases and tools you need",
+      b: "Investing in education and knowledge-building resources",
+      c: "Spending on experiences and creative tools that inspire you",
+      d: "Using money to help others and support causes you believe in",
+      e: "Viewing money as a tool for creating opportunities and building wealth",
+    },
+  },
+  {
+    id: 11,
+    question: "When facing a career decision, you would most likely:",
+    options: {
+      a: "Choose based on job security and practical benefits",
+      b: "Choose based on intellectual interest and learning opportunities",
+      c: "Choose based on creative fulfillment and personal expression",
+      d: "Choose based on ability to help others and make a social impact",
+      e: "Choose based on advancement potential and financial rewards",
+    },
+  },
+  {
+    id: 12,
+    question: "When you encounter a new technology or innovation, your first thought is:",
+    options: {
+      a: "'How does this work and could I build or repair it?'",
+      b: "'What are the scientific principles behind this?'",
+      c: "'How could this be used creatively or artistically?'",
+      d: "'How could this help people and improve their lives?'",
+      e: "'What business opportunities does this create?'",
+    },
   },
 ];
 
-const careerPaths = {
-  science: {
-    name: 'Science Stream',
-    description: 'For students interested in medicine, engineering, research, and technology',
-    subjects: ['Physics', 'Chemistry', 'Mathematics', 'Biology (optional)'],
-    careerOptions: ['Engineering', 'Medicine', 'Research', 'Biotechnology', 'Pharmacy', 'Nursing'],
-    minScore: 15,
-    institutions: ['Government/Private colleges', 'Medical colleges', 'Engineering colleges'],
-  },
-  commerce: {
-    name: 'Commerce Stream',
-    description: 'For students interested in business, finance, accounting, and management',
-    subjects: ['Accountancy', 'Business Studies', 'Economics', 'Mathematics (optional)'],
-    careerOptions: ['CA', 'CS', 'Banking', 'Business Management', 'Economics', 'Finance'],
-    minScore: 12,
-    institutions: ['Commerce colleges', 'Business schools', 'Professional institutes'],
-  },
-  arts: {
-    name: 'Arts/Humanities Stream',
-    description: 'For students interested in literature, social sciences, psychology, and creative fields',
-    subjects: ['History', 'Geography', 'Political Science', 'Economics', 'Psychology', 'Literature'],
-    careerOptions: ['Teaching', 'Civil Services', 'Journalism', 'Psychology', 'Social Work', 'Law'],
-    minScore: 10,
-    institutions: ['Arts colleges', 'Universities', 'Specialized institutes'],
-  },
-  diploma: {
-    name: 'Diploma Courses',
-    description: 'Technical and professional diploma courses for quick employment',
-    subjects: ['Varies by specialization'],
-    careerOptions: ['Engineering Diploma', 'Hotel Management', 'Fashion Design', 'Computer Applications', 'Pharmacy'],
-    minScore: 8,
-    institutions: ['Polytechnics', 'Technical institutes', 'Specialized colleges'],
-  },
-  vocational: {
-    name: 'Vocational Training',
-    description: 'Skill-based training for immediate employment opportunities',
-    subjects: ['Trade-specific skills'],
-    careerOptions: ['ITI trades', 'Skill development programs', 'Apprenticeships', 'Self-employment'],
-    minScore: 5,
-    institutions: ['ITI', 'Skill development centers', 'Training institutes'],
-  },
-};
-
-function calculateCareerPath(responses) {
-  const scores = { science: 0, commerce: 0, arts: 0, diploma: 0, vocational: 0 };
-  responses.forEach((response) => {
-    const question = careerQuestions.find((q) => q.id === response.questionId);
-    const selectedOption = question?.options.find((opt) => opt.value === response.answer);
-    if (selectedOption?.weight) {
-      Object.keys(selectedOption.weight).forEach((path) => {
-        if (Object.prototype.hasOwnProperty.call(scores, path)) {
-          scores[path] += selectedOption.weight[path];
-        }
-      });
-    }
-  });
-  const recommendedPath = Object.keys(scores).reduce((a, b) => (scores[a] > scores[b] ? a : b));
-  return { recommendedPath, scores, pathDetails: careerPaths[recommendedPath], allPaths: careerPaths };
-}
-
-export { careerQuestions, careerPaths, questionCategories, calculateCareerPath };
+// Normalized questions for UI: options as array of { value, text }
+export const careerQuestions = carrerQuestions.map((q) => ({
+  id: q.id,
+  question: q.question,
+  options: Object.entries(q.options).map(([value, text]) => ({ value, text })),
+}));
