@@ -105,6 +105,7 @@ function GuidanceInner() {
       }
 
       const recommendedStream = data.data?.recommendation?.primaryPath;
+      console.log('Recommended Stream:', recommendedStream);
       if (!recommendedStream) {
         notify('Could not determine optimal stream');
         return;
