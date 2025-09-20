@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import RequireCompleteProfile from "@/components/RequireCompleteProfile";
 import { interestQuestions } from "@/lib/data/interestQuestion";
 import Link from "next/link";
@@ -15,6 +15,7 @@ const categoryNames = {
 };
 
 export default function InterestPage() {
+  const topRef = useRef(null);
   const [selected, setSelected] = useState({}); // { [questionId]: 'a' | 'b' | ... }
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -30,6 +31,31 @@ export default function InterestPage() {
     [selected]
   );
   const canSubmit = answeredCount === totalQuestions && !loading;
+
+  function scrollToTop() {
+    try {
+      if (topRef.current && typeof topRef.current.scrollIntoView === "function") {
+        topRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+      const el = typeof document !== "undefined" ? (document.scrollingElement || document.documentElement || document.body) : null;
+      if (el && typeof el.scrollTo === "function") {
+        el.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      if (typeof window !== "undefined") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        // hard fallback
+        if (typeof document !== "undefined") {
+          document.body && (document.body.scrollTop = 0);
+          document.documentElement && (document.documentElement.scrollTop = 0);
+        }
+      }
+    } catch (_) {
+      // last resort
+      if (typeof window !== "undefined") window.scrollTo(0, 0);
+    }
+  }
 
   function onPick(qid, letter) {
     setSelected((s) => ({ ...s, [qid]: letter }));
@@ -49,6 +75,13 @@ export default function InterestPage() {
     setError("");
     setResults([]);
     if (!canSubmit) return;
+    // Scroll to top when submitting with all questions answered
+    if (typeof window !== "undefined") {
+      // schedule to run after current event loop for better reliability
+      window.requestAnimationFrame(() => scrollToTop());
+    } else {
+      scrollToTop();
+    }
     setLoading(true);
 
     try {
@@ -77,12 +110,15 @@ export default function InterestPage() {
       setError(msg);
     } finally {
       setLoading(false);
+      // Ensure we are at top to show results or errors
+      scrollToTop();
     }
   }
 
   return (
     <RequireCompleteProfile>
       <main className="min-h-screen">
+        <div ref={topRef} aria-hidden="true" />
         <section className="px-4 sm:px-6 lg:px-8 pt-10 pb-6">
           <div className="max-w-6xl mx-auto">
             <header className="flex items-center justify-between mb-8">
