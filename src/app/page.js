@@ -203,7 +203,7 @@ export default function Home() {
                   
                 </div>
                 <DashboardCard
-                    href="/guidance"
+                    href="/study-materials"
                     title="Study Material"
                     description="Curated resources for exams"
                     icon={<BookOpen className="w-5 h-5" />}

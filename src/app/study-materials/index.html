@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHub - Study Material Website for Class 11-12</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <button id="backBtn" class="back-btn hidden">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="header-info">
+                    <div class="logo">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1 id="headerTitle">StudyHub</h1>
+                        <p id="headerSubtitle">Your Academic Success Partner</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="mainContent">
+        <!-- Stream Selection View -->
+        <div id="streamSelection" class="view active">
+            <div class="container">
+                <div class="hero-section">
+                    <h1 class="hero-title">
+                        Choose Your <span class="gradient-text">Stream</span>
+                    </h1>
+                    <p class="hero-description">
+                        Select your academic stream to access comprehensive study materials, practice tests, 
+                        and resources tailored for Class 11 & 12 students.
+                    </p>
+                </div>
+                
+                <div class="streams-grid">
+                    <div class="stream-card blue" data-stream="science">
+                        <div class="stream-content">
+                            <h3 class="stream-title">Science (PCM/PCB)</h3>
+                            <p class="stream-description">Physics, Chemistry, Mathematics/Biology stream for engineering and medical aspirants</p>
+                            <div class="stream-stats">
+                                <div class="stat">4 Subjects</div>
+                                <div class="stat">Study Materials</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stream-card green" data-stream="commerce">
+                        <div class="stream-content">
+                            <h3 class="stream-title">Commerce</h3>
+                            <p class="stream-description">Business Studies, Economics, and Accountancy for future entrepreneurs</p>
+                            <div class="stream-stats">
+                                <div class="stat">4 Subjects</div>
+                                <div class="stat">Study Materials</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stream-card purple" data-stream="arts">
+                        <div class="stream-content">
+                            <h3 class="stream-title">Arts/Humanities</h3>
+                            <p class="stream-description">History, Political Science, and Literature for creative minds</p>
+                            <div class="stream-stats">
+                                <div class="stat">4 Subjects</div>
+                                <div class="stat">Study Materials</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-dot green"></div>
+                        <span>Updated Content</span>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-dot blue"></div>
+                        <span>Expert Curated</span>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-dot purple"></div>
+                        <span>Exam Focused</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stream Dashboard View -->
+        <div id="streamDashboard" class="view">
+            <div class="container">
+                <div class="dashboard-header">
+                    <h1 id="streamTitle" class="dashboard-title">
+                        <span class="gradient-text">Dashboard</span>
+                    </h1>
+                    <p id="streamDescription" class="dashboard-description"></p>
+                    
+                    <div class="dashboard-stats">
+                        <div class="stat-item">
+                            <div class="stat-number" id="subjectCount">4</div>
+                            <div class="stat-label">Subjects</div>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="materialCount">0</div>
+                            <div class="stat-label">Study Materials</div>
+                        </div>
+                        <div class="stat-divider"></div>
+                        <div class="stat-item">
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-label">Access</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="subjectsGrid" class="subjects-grid">
+                    <!-- Subjects will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Subject Materials View -->
+        <div id="subjectMaterials" class="view">
+            <div class="container">
+                <div class="materials-header">
+                    <h1 id="subjectTitle" class="materials-title">
+                        <span class="gradient-text">Materials</span>
+                    </h1>
+                    <p id="subjectDescription" class="materials-description"></p>
+                    
+                    <div class="stream-badge">
+                        <span class="badge-label">Stream:</span>
+                        <span id="currentStream" class="badge-value"></span>
+                    </div>
+                </div>
+
+                <div id="materialsGrid" class="materials-grid">
+                    <!-- Materials will be populated by JavaScript -->
+                </div>
+
+                <div class="tips-section">
+                    <h2 class="tips-title">Quick Tips for <span id="tipsSubject"></span></h2>
+                    <div class="tips-grid">
+                        <div class="tips-column">
+                            <div class="tip">
+                                <div class="tip-dot blue"></div>
+                                <p>Start with basic concepts and build your foundation</p>
+                            </div>
+                            <div class="tip">
+                                <div class="tip-dot green"></div>
+                                <p>Practice regularly with mock tests and previous year papers</p>
+                            </div>
+                            <div class="tip">
+                                <div class="tip-dot purple"></div>
+                                <p>Watch video lectures for better understanding of complex topics</p>
+                            </div>
+                        </div>
+                        <div class="tips-column">
+                            <div class="tip">
+                                <div class="tip-dot orange"></div>
+                                <p>Refer to recommended books for in-depth knowledge</p>
+                            </div>
+                            <div class="tip">
+                                <div class="tip-dot red"></div>
+                                <p>Create revision notes and practice diagrams regularly</p>
+                            </div>
+                            <div class="tip">
+                                <div class="tip-dot teal"></div>
+                                <p>Join study groups and discuss doubts with peers</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Material Detail View -->
+        <div id="materialDetail" class="view">
+            <div class="container">
+                <div class="material-detail">
+                    <div class="material-detail-header">
+                        <h1 id="materialTypeTitle" class="material-detail-title"></h1>
+                        <p id="materialTypeSubtitle" class="material-detail-subtitle"></p>
+                    </div>
+
+                    <div id="resourcesGrid" class="resources-grid">
+                        <!-- Resources will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="tips-section">
+                    <h2 class="tips-title">How to Make the Most of These <span id="tipsMaterialType"></span></h2>
+                    <div class="tips-grid">
+                        <div class="tips-column">
+                            <div class="tip">
+                                <div class="tip-dot blue"></div>
+                                <p>Set aside dedicated time for studying these materials</p>
+                            </div>
+                            <div class="tip">
+                                <div class="tip-dot green"></div>
+                                <p>Take notes while going through the resources</p>
+                            </div>
+                            <div class="tip">
+                                <div class="tip-dot purple"></div>
+                                <p>Review difficult concepts multiple times</p>
+                            </div>
+                        </div>
+                        <div class="tips-column">
+                            <div class="tip">
+                                <div class="tip-dot orange"></div>
+                                <p>Test yourself after studying each section</p>
+                            </div>
+                            <div class="tip">
+                                <div class="tip-dot red"></div>
+                                <p>Discuss with peers or teachers if you have questions</p>
+                            </div>
+                            <div class="tip">
+                                <div class="tip-dot teal"></div>
+                                <p>Create a study schedule and stick to it</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
