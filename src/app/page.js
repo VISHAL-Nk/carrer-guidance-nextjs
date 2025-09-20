@@ -250,7 +250,6 @@ export default function Home() {
                     icon={<Award className="w-5 h-5" />}
                     color="orange"
                     locked={!isProfileComplete}
-                    comingSoon
                   />
                 </div>
               </div>
