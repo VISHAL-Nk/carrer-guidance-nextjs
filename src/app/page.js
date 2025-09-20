@@ -31,10 +31,10 @@ export default function Home() {
   ];
 
   useEffect(() => {
-    if (user) return; // show carousel only for unauthenticated users
+    // Auto-rotate carousel on the homepage
     const id = setInterval(() => setSlide((s) => (s + 1) % slides.length), 3000);
     return () => clearInterval(id);
-  }, [user, slides.length]);
+  }, [slides.length]);
   const isProfileComplete = completion?.isComplete ?? false;
 
   // Debug logging
@@ -102,72 +102,33 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-8 pt-8 border-t border-white/40">
-                <div className="text-center">
-                  <div className="text-2xl font-extrabold text-blue-600">10K+</div>
-                  <div className="text-sm text-gray-700/90 dark:text-gray-300">Students Guided</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-extrabold text-emerald-600">
-                    500+
-                  </div>
-                  <div className="text-sm text-gray-700/90 dark:text-gray-300">Colleges Listed</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-extrabold text-purple-600">95%</div>
-                  <div className="text-sm text-gray-700/90 dark:text-gray-300">Success Rate</div>
-                </div>
-              </div>
+              
             </div>
 
             <div className="relative">
-              <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-2xl p-8 card-hover ring-1 ring-black/5">
-                <div className="space-y-6">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                      <BookOpen className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                        Smart Assessment
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        AI-powered career matching
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                      <GraduationCap className="w-6 h-6 text-emerald-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                        College Finder
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Discover perfect institutions
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                      <TrendingUp className="w-6 h-6 text-purple-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                        Career Roadmap
-                      </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Step-by-step guidance
-                      </p>
-                    </div>
-                  </div>
+              <div className="glass relative overflow-hidden rounded-2xl shadow-2xl ring-1 ring-black/5 bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur">
+                <div className="aspect-[16/9] w-full relative">
+                  {slides.map((src, idx) => (
+                    <img
+                      key={src}
+                      src={src}
+                      alt={`Slide ${idx + 1}`}
+                      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${slide === idx ? 'opacity-100' : 'opacity-0'}`}
+                      loading={idx === 0 ? 'eager' : 'lazy'}
+                    />
+                  ))}
                 </div>
-              </div>
-              {/* Decorative image on card */}
-              <div className="absolute -top-6 -right-6 w-28 h-28 rotate-12 opacity-80 pointer-events-none">
-                <img src="/globe.svg" alt="Decorative globe" className="w-full h-full object-contain animate-float-slow" />
+                {/* dots */}
+                <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
+                  {slides.map((_, idx) => (
+                    <button
+                      key={idx}
+                      aria-label={`Go to slide ${idx + 1}`}
+                      onClick={() => setSlide(idx)}
+                      className={`w-2.5 h-2.5 rounded-full transition-all ${slide === idx ? 'bg-blue-600 w-6' : 'bg-white/70 dark:bg-white/30'}`}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
@@ -301,37 +262,7 @@ export default function Home() {
       {/* Chatbot: show only on main page when authenticated */}
       {user && <Chatbot />}
 
-      {/* Carousel for unauthenticated users */}
-      {!user && (
-        <section className="px-4 sm:px-6 lg:px-8">
-          <div className="max-w-5xl mx-auto">
-            <div className="glass relative overflow-hidden rounded-2xl shadow-xl ring-1 ring-black/5 bg-white/90 dark:bg-[#0b1220]/70 backdrop-blur">
-              <div className="aspect-[16/9] w-full relative">
-                {slides.map((src, idx) => (
-                  <img
-                    key={src}
-                    src={src}
-                    alt={`Slide ${idx + 1}`}
-                    className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${slide === idx ? 'opacity-100' : 'opacity-0'}`}
-                    loading={idx === 0 ? 'eager' : 'lazy'}
-                  />)
-                )}
-              </div>
-              {/* dots */}
-              <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
-                {slides.map((_, idx) => (
-                  <button
-                    key={idx}
-                    aria-label={`Go to slide ${idx + 1}`}
-                    onClick={() => setSlide(idx)}
-                    className={`w-2.5 h-2.5 rounded-full transition-all ${slide === idx ? 'bg-blue-600 w-6' : 'bg-white/70 dark:bg-white/30'}`}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
+      
 
       {/* Features Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">

@@ -21,6 +21,11 @@ const uiTranslations = {
     mic: "🎤",
     open: "Chat",
     close: "Close",
+    listening: "Listening...",
+    micDisabled: "Microphone not available",
+    micPermissionDenied: "Microphone permission denied. Please allow access and try again.",
+    micError: "Speech recognition error. Please try again.",
+    noSpeechDetected: "No speech detected. Please try speaking again.",
   },
   hi: {
     title: "करियर मार्गदर्शन चैटबोट",
@@ -33,6 +38,11 @@ const uiTranslations = {
     mic: "🎤",
     open: "चैट",
     close: "बंद करें",
+    listening: "सुन रहा हूँ...",
+    micDisabled: "माइक्रोफ़ोन उपलब्ध नहीं",
+    micPermissionDenied: "माइक्रोफ़ोन की अनुमति नहीं मिली। कृपया अनुमति दें और फिर से कोशिश करें।",
+    micError: "स्पीच रिकग्निशन में त्रुटि। कृपया फिर से कोशिश करें।",
+    noSpeechDetected: "कोई आवाज़ नहीं मिली। कृपया दोबारा बोलने की कोशिश करें।",
   },
 };
 
@@ -53,6 +63,8 @@ function Chatbot() {
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [speechError, setSpeechError] = useState(null);
+
   const chatRef = useRef(null);
   const recognitionRef = useRef(null);
 
@@ -71,10 +83,18 @@ function Chatbot() {
     }
   }, [messages, isOpen]);
 
+  // Check if speech recognition is available
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const isAvailable = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+      console.log("Speech recognition available:", isAvailable);
+    }
+  }, []);
+
   const canUseSpeech = useMemo(() => {
     return (
       typeof window !== "undefined" &&
-      ("SpeechRecognition" in window || "webkitSpeechRecognition" in window)
+      !!(window.SpeechRecognition || window.webkitSpeechRecognition)
     );
   }, []);
 
@@ -84,54 +104,143 @@ function Chatbot() {
       const synthLang = speechLangMap[lang] || "en-US";
       const utter = new window.SpeechSynthesisUtterance(text);
       utter.lang = synthLang;
+      utter.rate = 0.9;
+      utter.pitch = 1;
       window.speechSynthesis?.speak(utter);
     } catch (e) {
-      // no-op if unsupported
+      console.warn("Speech synthesis failed:", e);
     }
   }, [lang]);
 
+  const showErrorMessage = useCallback((errorType) => {
+    let errorMessage;
+    switch (errorType) {
+      case 'permission-denied':
+        errorMessage = t.micPermissionDenied;
+        break;
+      case 'no-speech':
+        errorMessage = t.noSpeechDetected;
+        break;
+      default:
+        errorMessage = t.micError;
+    }
+    
+    setSpeechError(errorMessage);
+    setTimeout(() => setSpeechError(null), 3000);
+  }, [t]);
+
   const startVoiceInput = useCallback(async () => {
-    if (!canUseSpeech) return;
+    if (!canUseSpeech || isListening) return;
+    
+    setSpeechError(null);
+    
     try {
-      // Request mic permission to improve reliability on some browsers
-      if (navigator?.mediaDevices?.getUserMedia) {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
+      // First, explicitly request microphone permission
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Stop the stream immediately since we only needed it for permission
+        stream.getTracks().forEach(track => track.stop());
+      } catch (permissionError) {
+        console.error("Microphone permission denied:", permissionError);
+        showErrorMessage('permission-denied');
+        return;
       }
-      const Rec =
-        typeof window !== "undefined" &&
-        (window.SpeechRecognition || window.webkitSpeechRecognition);
-      if (!Rec) return;
-      const recognition = new Rec();
+
+      // Create a new SpeechRecognition instance using the same approach as the working code
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        console.warn("Speech recognition not supported");
+        showErrorMessage('not-supported');
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false; // Set to false for better control
+      recognition.interimResults = true; // Enable interim results like the working code
       recognition.lang = speechLangMap[lang] || "en-US";
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-      recognition.onstart = () => setIsListening(true);
-      recognition.onend = () => setIsListening(false);
-      recognition.onresult = (e) => {
-        const speechText = e.results?.[0]?.[0]?.transcript || "";
-        if (speechText) {
-          setInput(speechText);
-          setTimeout(() => handleSend(speechText), 0);
+
+      recognition.onstart = () => {
+        console.log("Speech recognition started");
+        setIsListening(true);
+        setSpeechError(null);
+      };
+
+      recognition.onresult = (event) => {
+        // Use the same logic as the working code
+        const transcript = event.results[event.results.length - 1][0].transcript;
+        console.log("Speech recognized:", transcript);
+        
+        // Only set final results to input
+        if (event.results[event.results.length - 1].isFinal) {
+          setInput(transcript.trim());
+          setIsListening(false);
         }
       };
-      recognition.onerror = () => setIsListening(false);
+
+      recognition.onend = () => {
+        console.log("Speech recognition ended");
+        setIsListening(false);
+      };
+
+      recognition.onerror = (event) => {
+        console.error("Speech recognition error:", event.error);
+        setIsListening(false);
+        
+        // Handle specific errors with user-friendly messages
+        switch (event.error) {
+          case 'not-allowed':
+          case 'permission-denied':
+            showErrorMessage('permission-denied');
+            break;
+          case 'no-speech':
+            showErrorMessage('no-speech');
+            break;
+          case 'network':
+            showErrorMessage('network');
+            break;
+          default:
+            showErrorMessage('general');
+        }
+      };
+
       recognitionRef.current = recognition;
       recognition.start();
-    } catch (e) {
+    } catch (error) {
+      console.error("Error starting speech recognition:", error);
       setIsListening(false);
+      showErrorMessage('general');
     }
-  }, [canUseSpeech, lang]);
+  }, [canUseSpeech, lang, isListening, showErrorMessage]);
 
   const stopVoiceInput = useCallback(() => {
-    try {
-      recognitionRef.current?.stop?.();
-    } catch {}
+    if (recognitionRef.current && isListening) {
+      try {
+        recognitionRef.current.stop();
+      } catch (error) {
+        console.error("Error stopping speech recognition:", error);
+      }
+    }
+    setIsListening(false);
+  }, [isListening]);
+
+  // Cleanup recognition on unmount
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {
+          // Ignore cleanup errors
+        }
+      }
+    };
   }, []);
 
   const handleSend = useCallback(
     async (forcedText) => {
       const text = (forcedText ?? input).trim();
       if (!text || isSending) return;
+      
       setIsSending(true);
       setMessages((prev) => [...prev, { sender: "user", text }]);
       setInput("");
@@ -142,17 +251,23 @@ function Chatbot() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: text, lang }),
         });
+        
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const data = await res.json();
-  const replyRaw = data?.reply ?? "Sorry, I couldn't understand that.";
-  // Normalize common formatting: preserve newlines and light markdown
-  const reply = String(replyRaw);
-  setMessages((prev) => [...prev, { sender: "bot", text: reply }]);
+        
+        const data = await res.json();
+        const replyRaw = data?.reply ?? "Sorry, I couldn't understand that.";
+        const reply = String(replyRaw);
+        
+        setMessages((prev) => [...prev, { sender: "bot", text: reply }]);
         speak(reply);
       } catch (err) {
+        console.error("Chat error:", err);
+        const errorMessage = lang === "hi" 
+          ? "सर्वर से जुड़ने में समस्या हुई।"
+          : "Sorry, there was a problem connecting to the server. Please try again.";
         setMessages((prev) => [
           ...prev,
-          { sender: "bot", text: "There was a problem reaching the server." },
+          { sender: "bot", text: errorMessage },
         ]);
       } finally {
         setIsSending(false);
@@ -162,6 +277,24 @@ function Chatbot() {
   );
 
   const toggleOpen = () => setIsOpen((v) => !v);
+
+  const handleMicClick = useCallback(() => {
+    if (isListening) {
+      stopVoiceInput();
+    } else {
+      startVoiceInput();
+    }
+  }, [isListening, startVoiceInput, stopVoiceInput]);
+
+  // Determine microphone button state
+  const getMicButtonState = () => {
+    if (!canUseSpeech) return 'disabled';
+    if (isListening) return 'listening';
+    // Don't rely on stored permission status for UI state
+    return 'ready';
+  };
+
+  const micButtonState = getMicButtonState();
 
   return (
     <>
@@ -230,11 +363,18 @@ function Chatbot() {
             </div>
           </div>
 
-          {/* Welcome section (collapsed height) */}
+          {/* Welcome section */}
           <div className="px-4 pt-3 pb-2 text-xs text-gray-700 dark:text-gray-200">
             <h2 className="font-semibold mb-1">{t.welcome}</h2>
             <p className="leading-relaxed">{t.description}</p>
           </div>
+
+          {/* Error message for speech recognition */}
+          {speechError && (
+            <div className="mx-4 mb-2 p-2 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+              <p className="text-xs text-red-700 dark:text-red-300">{speechError}</p>
+            </div>
+          )}
 
           {/* Chat area */}
           <div
@@ -268,6 +408,19 @@ function Chatbot() {
                 </div>
               </div>
             ))}
+            {isListening && (
+              <div className="flex justify-start">
+                <img
+                  src="https://img.icons8.com/color/28/000000/robot.png"
+                  alt="Bot"
+                  className="h-6 w-6 mr-2 self-end"
+                />
+                <div className="max-w-[80%] rounded-2xl px-3 py-2 text-sm text-gray-500 bg-white/90 dark:bg-gray-900/60 ring-1 ring-black/5 italic flex items-center gap-2">
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                  {t.listening}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Input */}
@@ -284,22 +437,35 @@ function Chatbot() {
               onChange={(e) => setInput(e.target.value)}
               placeholder={t.inputPlaceholder}
               className="flex-1 text-sm px-3 py-2 rounded-xl bg-gray-100/90 dark:bg-gray-800/70 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-400"
+              disabled={isListening}
             />
             <button
               type="button"
-              onClick={isListening ? stopVoiceInput : startVoiceInput}
-              disabled={!canUseSpeech}
-              title={canUseSpeech ? t.mic : "Speech not supported"}
-              className={`px-3 py-2 rounded-xl ${isListening ? 'bg-red-500 text-white' : 'bg-gray-200/80 dark:bg-gray-700/70 text-gray-800 dark:text-gray-100 hover:bg-gray-200'} disabled:opacity-50`}
+              onClick={handleMicClick}
+              disabled={micButtonState === 'disabled'}
+              title={
+                micButtonState === 'disabled' 
+                  ? t.micDisabled
+                  : micButtonState === 'listening'
+                  ? "Stop listening"
+                  : "Start voice input"
+              }
+              className={`px-3 py-2 rounded-xl transition-all duration-200 ${
+                micButtonState === 'listening'
+                  ? 'bg-red-500 text-white hover:bg-red-600 animate-pulse' 
+                  : micButtonState === 'ready'
+                  ? 'bg-gray-200/80 dark:bg-gray-700/70 text-gray-800 dark:text-gray-100 hover:bg-gray-300/80 dark:hover:bg-gray-600/70'
+                  : 'bg-gray-100/50 dark:bg-gray-800/50 text-gray-400 cursor-not-allowed'
+              }`}
             >
-              {isListening ? '■' : t.mic}
+              {micButtonState === 'listening' ? '⏹️' : t.mic}
             </button>
             <button
               type="submit"
-              disabled={isSending}
-              className="px-4 py-2 rounded-xl text-white bg-gradient-to-r from-pink-500 to-indigo-500 hover:from-pink-400 hover:to-indigo-400 shadow disabled:opacity-60"
+              disabled={isSending || !input.trim()}
+              className="px-4 py-2 rounded-xl text-white bg-gradient-to-r from-pink-500 to-indigo-500 hover:from-pink-400 hover:to-indigo-400 shadow disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
             >
-              {t.send}
+              {isSending ? "..." : t.send}
             </button>
           </form>
         </div>
