@@ -19,6 +19,10 @@ import {
   Brain,
   Lightbulb,
   Rocket,
+  MapPin,
+  Calendar,
+  Phone,
+  Mail,
 } from "lucide-react";
 import Chatbot from "@/components/CB/Chatbot";
 import { useToast } from "@/contexts/ToastContext";
@@ -29,6 +33,8 @@ export default function Home() {
   const [slide, setSlide] = useState(0);
   const [fb, setFb] = useState({ name: "", email: "", message: "", rating: 5 });
   const [fbSubmitting, setFbSubmitting] = useState(false);
+  
+  // Hero carousel images from public/images
   const slides = [
     "/images/WhatsApp Image 2025-09-19 at 3.55.30 PM.jpeg",
     "/images/WhatsApp Image 2025-09-19 at 3.55.30 PM (1).jpeg",
@@ -41,6 +47,7 @@ export default function Home() {
     const id = setInterval(() => setSlide((s) => (s + 1) % slides.length), 4000);
     return () => clearInterval(id);
   }, [slides.length]);
+
   const isProfileComplete = completion?.isComplete ?? false;
 
   // Debug logging
@@ -48,7 +55,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-blue-900 dark:to-indigo-900">
-      {/* Hero Section */}
+      {/* Hero Section with Image Carousel */}
       <section className="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
         {/* Enhanced decorative background */}
         <div className="absolute inset-0 -z-10">
@@ -60,6 +67,7 @@ export default function Home() {
 
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Hero Content */}
             <div className="space-y-8">
               <div className="space-y-6">
                 <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200/50 dark:border-blue-700/50">
@@ -141,6 +149,7 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Image Carousel */}
             <div className="relative">
               <div className="relative overflow-hidden rounded-3xl shadow-2xl ring-1 ring-black/5 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
                 <div className="aspect-[16/10] w-full relative">
@@ -180,6 +189,73 @@ export default function Home() {
               {/* Floating elements */}
               <div className="absolute -top-6 -right-6 w-24 h-24 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl rotate-12 opacity-80 blur-sm"></div>
               <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-gradient-to-r from-emerald-400 to-cyan-500 rounded-full opacity-60 blur-sm"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Your College Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-gray-800/20 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+              Why Choose{" "}
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600 bg-clip-text text-transparent">
+                Your College
+              </span>
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Make informed decisions with our comprehensive college selection guidance
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="relative group">
+              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-xl p-8 transition-all duration-300 border border-white/20 dark:border-gray-700/20 group-hover:border-gray-300/50 dark:group-hover:border-gray-600/50 transform group-hover:-translate-y-2">
+                <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-6 flex items-center justify-center">
+                  <img 
+                    src="/heroImages/image.png" 
+                    alt="College Selection" 
+                    className="w-full h-full object-cover rounded-2xl"
+                  />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Smart Selection</h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  Use AI-powered recommendations to find colleges that match your academic profile, interests, and career goals.
+                </p>
+              </div>
+            </div>
+
+            <div className="relative group">
+              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-xl p-8 transition-all duration-300 border border-white/20 dark:border-gray-700/20 group-hover:border-gray-300/50 dark:group-hover:border-gray-600/50 transform group-hover:-translate-y-2">
+                <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-6 flex items-center justify-center">
+                  <img 
+                    src="/heroImages/image.png" 
+                    alt="Career Guidance" 
+                    className="w-full h-full object-cover rounded-2xl"
+                  />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Career Alignment</h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  Ensure your college choice aligns with your long-term career aspirations and industry requirements.
+                </p>
+              </div>
+            </div>
+
+            <div className="relative group">
+              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-xl p-8 transition-all duration-300 border border-white/20 dark:border-gray-700/20 group-hover:border-gray-300/50 dark:group-hover:border-gray-600/50 transform group-hover:-translate-y-2">
+                <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-6 flex items-center justify-center">
+                  <img 
+                    src="/heroImages/image.png" 
+                    alt="Success Tracking" 
+                    className="w-full h-full object-cover rounded-2xl"
+                  />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Success Tracking</h3>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  Monitor your academic progress and get personalized recommendations for continuous improvement.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -260,15 +336,6 @@ export default function Home() {
                     </div>
                   )}
                 </div>
-
-                <DashboardCard
-                  href="/study-materials"
-                  title="Study Materials"
-                  description="Curated resources for exams"
-                  icon={<BookOpen className="w-6 h-6" />}
-                  color="emerald"
-                  locked={!isProfileComplete}
-                />
               </div>
 
               {/* Dashboard Cards */}
@@ -309,6 +376,14 @@ export default function Home() {
                     color="orange"
                     locked={!isProfileComplete}
                   />
+                  <DashboardCard
+                    href="/study-materials"
+                    title="Study Materials"
+                    description="Curated resources for exams"
+                    icon={<BookOpen className="w-6 h-6" />}
+                    color="emerald"
+                    locked={!isProfileComplete}
+                  />
                 </div>
               </div>
             </div>
@@ -316,51 +391,78 @@ export default function Home() {
         </section>
       )}
 
-      {/* Chatbot: show only on main page when authenticated */}
-      {user && <Chatbot />}
-
-      {/* Features Section */}
+      {/* Special Opportunities for Local Students Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200/50 dark:border-blue-700/50 mb-6">
-              <Lightbulb className="w-4 h-4 text-blue-600 mr-2" />
-              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Why Choose Us</span>
-            </div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-              Empowering Your{" "}
+              Special Opportunities for{" "}
               <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600 bg-clip-text text-transparent">
-                Success Story
+                Local Students
               </span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Advanced AI technology meets comprehensive career resources to provide 
-              personalized guidance for every student's unique journey.
+              Exclusive programs and resources designed specifically for students in your region
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <FeatureCard
-              icon={<Brain className="w-10 h-10 text-blue-600" />}
-              title="AI-Powered Insights"
-              description="Advanced algorithms analyze your interests, skills, and goals to recommend the perfect career path tailored just for you."
-              gradient="from-blue-500 to-cyan-500"
-            />
-            <FeatureCard
-              icon={<Globe className="w-10 h-10 text-emerald-600" />}
-              title="Comprehensive Database"
-              description="Access detailed information about thousands of colleges, courses, and career opportunities across India and beyond."
-              gradient="from-emerald-500 to-teal-500"
-            />
-            <FeatureCard
-              icon={<TrendingUp className="w-10 h-10 text-purple-600" />}
-              title="Interactive Roadmaps"
-              description="Get step-by-step career roadmaps with milestones, timelines, and actionable insights to guide your journey."
-              gradient="from-purple-500 to-pink-500"
-            />
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-xl p-8 transition-all duration-300 border border-white/20 dark:border-gray-700/20 hover:border-gray-300/50 dark:hover:border-gray-600/50 transform hover:-translate-y-2">
+              <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-6 flex items-center justify-center">
+                <img 
+                  src="/heroImages/image.png" 
+                  alt="Local Scholarships" 
+                  className="w-full h-full object-cover rounded-2xl"
+                />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Regional Scholarships</h3>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+                Access exclusive scholarship opportunities available specifically for students in your state and region.
+              </p>
+              <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+                Available for J&K students
+              </div>
+            </div>
+
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-xl p-8 transition-all duration-300 border border-white/20 dark:border-gray-700/20 hover:border-gray-300/50 dark:hover:border-gray-600/50 transform hover:-translate-y-2">
+              <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-6 flex items-center justify-center">
+                <img 
+                  src="/heroImages/image.png" 
+                  alt="Local Colleges" 
+                  className="w-full h-full object-cover rounded-2xl"
+                />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Local College Network</h3>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+                Connect with top colleges and universities in your region with special admission quotas and programs.
+              </p>
+              <div className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
+                500+ regional colleges
+              </div>
+            </div>
+
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-xl p-8 transition-all duration-300 border border-white/20 dark:border-gray-700/20 hover:border-gray-300/50 dark:hover:border-gray-600/50 transform hover:-translate-y-2">
+              <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-6 flex items-center justify-center">
+                <img 
+                  src="/heroImages/image.png" 
+                  alt="Mentorship Program" 
+                  className="w-full h-full object-cover rounded-2xl"
+                />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Local Mentorship</h3>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
+                Get guidance from successful professionals and alumni from your region who understand local opportunities.
+              </p>
+              <div className="text-sm text-purple-600 dark:text-purple-400 font-medium">
+                1000+ local mentors
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* Chatbot: show only on main page when authenticated */}
+      {user && <Chatbot />}
 
       {/* Stats Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600 relative overflow-hidden">
@@ -623,17 +725,5 @@ function DashboardCard({
         </div>
       </div>
     </Link>
-  );
-}
-
-function FeatureCard({ icon, title, description, gradient }) {
-  return (
-    <div className="group relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-xl p-8 transition-all duration-300 border border-white/20 dark:border-gray-700/20 hover:border-gray-300/50 dark:hover:border-gray-600/50 transform hover:-translate-y-2">
-      <div className={`w-16 h-16 bg-gradient-to-r ${gradient} rounded-2xl flex items-center justify-center mx-auto mb-6 text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-        {icon}
-      </div>
-      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 text-center">{title}</h3>
-      <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-center">{description}</p>
-    </div>
   );
 }
