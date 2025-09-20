@@ -23,6 +23,10 @@ import {
   Calendar,
   Phone,
   Mail,
+  DollarSign,
+  Building,
+  UserCheck,
+  Briefcase,
 } from "lucide-react";
 import Chatbot from "@/components/CB/Chatbot";
 import { useToast } from "@/contexts/ToastContext";
@@ -71,21 +75,20 @@ export default function Home() {
             <div className="space-y-8">
               <div className="space-y-6">
                 <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200/50 dark:border-blue-700/50">
-                  <Zap className="w-4 h-4 text-blue-600 mr-2" />
-                  <span className="text-sm font-medium text-blue-700 dark:text-blue-300">AI-Powered Career Guidance</span>
+                  <GraduationCap className="w-4 h-4 text-blue-600 mr-2" />
+                  <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Government Colleges J&K</span>
                 </div>
                 
                 <h1 className="text-5xl md:text-7xl font-extrabold leading-tight tracking-tight">
-                  Shape Your{" "}
+                  Your{" "}
                   <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600 bg-clip-text text-transparent">
                     Future
                   </span>{" "}
-                  Today
+                  Starts Here
                 </h1>
                 
                 <p className="text-xl md:text-2xl text-gray-700/90 dark:text-gray-200 leading-relaxed max-w-2xl">
-                  Unlock your potential with personalized AI-driven career guidance, 
-                  comprehensive resources, and expert insights tailored for ambitious students.
+                  Are you in Class 11 or 12 and thinking about your future after school? Discover the incredible opportunities waiting for you at Government Colleges across Jammu & Kashmir — where quality education meets affordability.
                 </p>
               </div>
 
@@ -106,7 +109,7 @@ export default function Home() {
                       className="group inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-blue-700 dark:text-blue-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-blue-200 dark:border-blue-700 rounded-2xl hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300"
                     >
                       <GraduationCap className="w-6 h-6 mr-3" />
-                      <span>Predict Colleges</span>
+                      <span>Find Colleges</span>
                     </Link>
                   </>
                 ) : (
@@ -157,7 +160,7 @@ export default function Home() {
                     <img
                       key={src}
                       src={src}
-                      alt={`Career guidance illustration ${idx + 1}`}
+                      alt={`Government college illustration ${idx + 1}`}
                       className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 ${
                         slide === idx ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
                       }`}
@@ -194,18 +197,18 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Why Choose Your College Section */}
+      {/* Why Choose Government Colleges Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-gray-800/20 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
               Why Choose{" "}
               <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600 bg-clip-text text-transparent">
-                Your College
+                Government Colleges in J&K?
               </span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Make informed decisions with our comprehensive college selection guidance
+              Whether you dream of becoming a doctor, engineer, scientist, or expert in any other field, our colleges provide the perfect platform to turn your dreams into reality.
             </p>
           </div>
 
@@ -215,13 +218,16 @@ export default function Home() {
                 <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-6 flex items-center justify-center">
                   <img 
                     src="/heroImages/image.png" 
-                    alt="College Selection" 
+                    alt="Top Quality Education" 
                     className="w-full h-full object-cover rounded-2xl"
                   />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Smart Selection</h3>
+                <div className="flex items-center mb-4">
+                  <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Top-Quality Education</h3>
+                </div>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Use AI-powered recommendations to find colleges that match your academic profile, interests, and career goals.
+                  Our colleges are affiliated with reputed universities and recognized by national bodies like UGC, AICTE, and NMC.
                 </p>
               </div>
             </div>
@@ -231,13 +237,16 @@ export default function Home() {
                 <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-6 flex items-center justify-center">
                   <img 
                     src="/heroImages/image.png" 
-                    alt="Career Guidance" 
+                    alt="Highly Qualified Faculty" 
                     className="w-full h-full object-cover rounded-2xl"
                   />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Career Alignment</h3>
+                <div className="flex items-center mb-4">
+                  <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Highly Qualified Faculty</h3>
+                </div>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Ensure your college choice aligns with your long-term career aspirations and industry requirements.
+                  Learn from experienced professors and industry-trained professionals who are passionate about your success.
                 </p>
               </div>
             </div>
@@ -247,13 +256,16 @@ export default function Home() {
                 <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-6 flex items-center justify-center">
                   <img 
                     src="/heroImages/image.png" 
-                    alt="Success Tracking" 
+                    alt="Affordable Fees" 
                     className="w-full h-full object-cover rounded-2xl"
                   />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Success Tracking</h3>
+                <div className="flex items-center mb-4">
+                  <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Affordable Fees</h3>
+                </div>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                  Monitor your academic progress and get personalized recommendations for continuous improvement.
+                  Get the best education without burdening your family financially. Most courses have minimal fees compared to private institutions.
                 </p>
               </div>
             </div>
@@ -391,10 +403,67 @@ export default function Home() {
         </section>
       )}
 
-      {/* Special Opportunities for Local Students Section */}
+      {/* Features Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+              More Reasons to{" "}
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600 bg-clip-text text-transparent">
+                Choose Us
+              </span>
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <FeatureCard
+              icon={<Building className="w-8 h-8" />}
+              title="Modern Infrastructure"
+              description="Smart classrooms, well-equipped labs, libraries, and digital learning tools to keep you ahead."
+              color="blue"
+            />
+            <FeatureCard
+              icon={<BookOpen className="w-8 h-8" />}
+              title="Wide Range of Courses"
+              description="Medical & Paramedical Sciences, Engineering & Technology, Pure Sciences, Commerce & Management, and many more!"
+              color="emerald"
+            />
+            <FeatureCard
+              icon={<Award className="w-8 h-8" />}
+              title="Scholarships & Financial Aid"
+              description="Availability of state and central scholarships for deserving students. No dream is too big when the support is strong!"
+              color="purple"
+            />
+            <FeatureCard
+              icon={<Briefcase className="w-8 h-8" />}
+              title="Career Support & Placement"
+              description="Get guidance, internships, and help with job placements to launch your career with confidence."
+              color="orange"
+            />
+            <FeatureCard
+              icon={<UserCheck className="w-8 h-8" />}
+              title="Reservation Benefits"
+              description="Special quotas and reservation benefits for local students from Jammu & Kashmir."
+              color="pink"
+            />
+            <FeatureCard
+              icon={<Shield className="w-8 h-8" />}
+              title="Government Schemes"
+              description="Access to special incentives and government schemes designed for local students."
+              color="teal"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Special Opportunities for Local Students Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white/50 dark:bg-gray-800/20 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 border border-green-200/50 dark:border-green-700/50 mb-6">
+              <Rocket className="w-4 h-4 text-green-600 mr-2" />
+              <span className="text-sm font-medium text-green-700 dark:text-green-300">🚀 Special Benefits</span>
+            </div>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
               Special Opportunities for{" "}
               <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600 bg-clip-text text-transparent">
@@ -402,7 +471,7 @@ export default function Home() {
               </span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Exclusive programs and resources designed specifically for students in your region
+              If you're from Jammu & Kashmir, you also get these exclusive benefits
             </p>
           </div>
 
@@ -411,51 +480,51 @@ export default function Home() {
               <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-6 flex items-center justify-center">
                 <img 
                   src="/heroImages/image.png" 
-                  alt="Local Scholarships" 
+                  alt="Reservation Benefits" 
                   className="w-full h-full object-cover rounded-2xl"
                 />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Regional Scholarships</h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
-                Access exclusive scholarship opportunities available specifically for students in your state and region.
-              </p>
-              <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">
-                Available for J&K students
+              <div className="flex items-center mb-4">
+                <UserCheck className="w-6 h-6 text-blue-500 mr-3" />
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Reservation Benefits</h3>
               </div>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                Special reservation quotas and benefits designed specifically for students from Jammu & Kashmir.
+              </p>
             </div>
 
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-xl p-8 transition-all duration-300 border border-white/20 dark:border-gray-700/20 hover:border-gray-300/50 dark:hover:border-gray-600/50 transform hover:-translate-y-2">
               <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-6 flex items-center justify-center">
                 <img 
                   src="/heroImages/image.png" 
-                  alt="Local Colleges" 
+                  alt="Local Student Quotas" 
                   className="w-full h-full object-cover rounded-2xl"
                 />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Local College Network</h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
-                Connect with top colleges and universities in your region with special admission quotas and programs.
-              </p>
-              <div className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
-                500+ regional colleges
+              <div className="flex items-center mb-4">
+                <MapPin className="w-6 h-6 text-emerald-500 mr-3" />
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Local Student Quotas</h3>
               </div>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                Dedicated seats and quotas reserved for local students, ensuring better admission opportunities.
+              </p>
             </div>
 
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-xl p-8 transition-all duration-300 border border-white/20 dark:border-gray-700/20 hover:border-gray-300/50 dark:hover:border-gray-600/50 transform hover:-translate-y-2">
               <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-2xl mb-6 flex items-center justify-center">
                 <img 
                   src="/heroImages/image.png" 
-                  alt="Mentorship Program" 
+                  alt="Government Schemes" 
                   className="w-full h-full object-cover rounded-2xl"
                 />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Local Mentorship</h3>
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-4">
-                Get guidance from successful professionals and alumni from your region who understand local opportunities.
-              </p>
-              <div className="text-sm text-purple-600 dark:text-purple-400 font-medium">
-                1000+ local mentors
+              <div className="flex items-center mb-4">
+                <Shield className="w-6 h-6 text-purple-500 mr-3" />
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Special Incentives</h3>
               </div>
+              <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                Access to special government schemes and incentives designed to support local students' education.
+              </p>
             </div>
           </div>
         </div>
@@ -481,18 +550,18 @@ export default function Home() {
               Trusted by Thousands
             </h2>
             <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-              Join the community of successful students who found their path with us
+              Join the community of successful students who found their path with Government Colleges in J&K
             </p>
           </div>
           
           <div className="grid md:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-white mb-2">10K+</div>
-              <div className="text-blue-100">Students Guided</div>
+              <div className="text-4xl md:text-5xl font-bold text-white mb-2">50+</div>
+              <div className="text-blue-100">Government Colleges</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-white mb-2">500+</div>
-              <div className="text-blue-100">Colleges Listed</div>
+              <div className="text-4xl md:text-5xl font-bold text-white mb-2">100+</div>
+              <div className="text-blue-100">Courses Available</div>
             </div>
             <div className="text-center">
               <div className="text-4xl md:text-5xl font-bold text-white mb-2">95%</div>
@@ -500,7 +569,7 @@ export default function Home() {
             </div>
             <div className="text-center">
               <div className="text-4xl md:text-5xl font-bold text-white mb-2">24/7</div>
-              <div className="text-blue-100">AI Support</div>
+              <div className="text-blue-100">Support</div>
             </div>
           </div>
         </div>
@@ -512,14 +581,13 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-center">
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-2xl p-12 border border-white/20 dark:border-gray-700/20">
               <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-                Ready to Discover Your{" "}
+                Ready to Start Your{" "}
                 <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-emerald-600 bg-clip-text text-transparent">
-                  Dream Career?
+                  Educational Journey?
                 </span>
               </h2>
               <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-                Join thousands of students who have found their perfect career path 
-                with our AI-powered guidance system.
+                Join thousands of students who have secured their future with quality education at Government Colleges in Jammu & Kashmir.
               </p>
               <Link
                 href="/register"
@@ -725,5 +793,26 @@ function DashboardCard({
         </div>
       </div>
     </Link>
+  );
+}
+
+function FeatureCard({ icon, title, description, color }) {
+  const colorClasses = {
+    blue: "text-blue-600 bg-blue-100",
+    emerald: "text-emerald-600 bg-emerald-100",
+    purple: "text-purple-600 bg-purple-100",
+    orange: "text-orange-600 bg-orange-100",
+    pink: "text-pink-600 bg-pink-100",
+    teal: "text-teal-600 bg-teal-100",
+  };
+
+  return (
+    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-xl p-8 transition-all duration-300 border border-white/20 dark:border-gray-700/20 hover:border-gray-300/50 dark:hover:border-gray-600/50 transform hover:-translate-y-2">
+      <div className={`w-16 h-16 ${colorClasses[color]} rounded-2xl flex items-center justify-center mb-6`}>
+        {icon}
+      </div>
+      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{title}</h3>
+      <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{description}</p>
+    </div>
   );
 }
