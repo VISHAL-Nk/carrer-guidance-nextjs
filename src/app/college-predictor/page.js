@@ -100,7 +100,7 @@ async function handleSubmit(e) {
     console.log("Frontend - Sending request:", body);
 
     // Use Next.js API route instead of direct Flask call
-    const res = await fetch("/api/predict-college", {
+    const res = await fetch("/api/predict", {
       method: "POST",
       headers: { 
         "Content-Type": "application/json",

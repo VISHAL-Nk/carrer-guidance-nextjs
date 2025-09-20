@@ -70,15 +70,36 @@ async function handleRegister(req) {
     const sid = process.env.TWILIO_SID;
     const token = process.env.TWILIO_AUTH_TOKEN;
     const from = process.env.TWILIO_PHONE_NUMBER;
-    if (!sid || !token || !from) throw new Error('Twilio not configured');
-    const client = twilio(sid, token);
-    await client.messages.create({ body: `Your verification code is: ${otp}. Valid for 5 minutes.`, from, to: phone });
-  } catch (e) {
-    pendingRegistrations.delete(phone);
-    return json({ message: 'Failed to send verification code. Please try again.' }, 503);
-  }
+    const isProd = process.env.NODE_ENV === 'production';
+    // Allow skipping SMS in development or when explicitly configured
+    const skipSms = process.env.SKIP_SMS === 'true' || (!isProd && (!sid || !token || !from));
 
-  return json({ message: 'Verification code sent successfully', expiresIn: 300 });
+    if (!skipSms) {
+      const client = twilio(sid, token);
+      await client.messages.create({ body: `Your verification code is: ${otp}. Valid for 5 minutes.`, from, to: phone });
+    } else {
+      if (!isProd) {
+        console.log(`📱 [DEV] Skipping SMS send. OTP for ${phone}: ${otp}`);
+      }
+    }
+  } catch (e) {
+    // On failure in production, clean up and notify. In dev, keep pending state to allow manual OTP testing.
+    const isProd = process.env.NODE_ENV === 'production';
+    if (isProd) {
+      pendingRegistrations.delete(phone);
+      return json({ message: 'Failed to send verification code. Please try again.' }, 503);
+    } else {
+      console.error('Twilio send failed in development:', e?.message || e);
+      // Continue in dev to allow testing with logged OTP
+    }
+  }
+  const isProd = process.env.NODE_ENV === 'production';
+  return json({
+    message: 'Verification code sent successfully',
+    expiresIn: 300,
+    // Return debug info only outside production to help local testing
+    ...(isProd ? {} : { debugOtp: pendingRegistrations.get(phone)?.otp, smsSkipped: process.env.SKIP_SMS === 'true' || (!process.env.TWILIO_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE_NUMBER) })
+  });
 }
 
 async function handleLogin(req) {

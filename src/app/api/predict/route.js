@@ -6,7 +6,7 @@ export async function POST(request) {
     console.log('API Route - Received request:', body);
     
     // Forward to Flask backend
-    const flaskResponse = await fetch('http://localhost:8080/predict', {
+    const flaskResponse = await fetch('http://localhost:8080/predict-college', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
