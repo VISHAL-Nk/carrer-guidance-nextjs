@@ -16,29 +16,38 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "CareerPath - AI-Powered Career Guidance Platform",
-  description: "Discover your ideal career path with our AI-powered assessment. Get personalized recommendations, interactive roadmaps, and guidance for students in classes 10th and 11th.",
-  keywords: "career guidance, career assessment, AI career advisor, student guidance, career path, education planning",
+  description:
+    "Discover your ideal career path with our AI-powered assessment. Get personalized recommendations, interactive roadmaps, and guidance for students in classes 10th and 11th.",
+  keywords:
+    "career guidance, career assessment, AI career advisor, student guidance, career path, education planning",
   authors: [{ name: "CareerPath Team" }],
   creator: "CareerPath",
   publisher: "CareerPath",
   robots: "index, follow",
   openGraph: {
     title: "CareerPath - AI-Powered Career Guidance",
-    description: "Discover your ideal career path with personalized AI-powered assessments and roadmaps.",
+    description:
+      "Discover your ideal career path with personalized AI-powered assessments and roadmaps.",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
     title: "CareerPath - AI-Powered Career Guidance",
-    description: "Discover your ideal career path with personalized AI-powered assessments and roadmaps.",
+    description:
+      "Discover your ideal career path with personalized AI-powered assessments and roadmaps.",
+  },
+  icons: {
+    icon: "/favicon.ico",
   },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased relative overflow-x-hidden`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased relative overflow-x-hidden`}
+      >
         {/* Global animated background */}
         <div className="fixed inset-0 -z-10">
           <div className="aurora-bg" />
