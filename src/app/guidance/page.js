@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import { useToast } from '@/contexts/ToastContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { collegeAfter10, collegeAfter12 } from '@/lib/data/collegeData';
+import { careerPaths } from '@/lib/data/carrerPath';
 import { 
   BookOpen, 
   Target, 
@@ -378,6 +379,21 @@ function ResultView({ result, userClass, onCopyCode, onRetryRequest }) {
     Array.isArray(c.CollegeType) && c.CollegeType.some((t) => targetTypes.includes(t))
   );
 
+  // Pick detailed career path info for the recommended stream
+  const careerPath = careerPaths?.[streamName] || careerPaths?.[stream] || null;
+  const [expandedRoles, setExpandedRoles] = useState({});
+
+  useEffect(() => {
+    if (careerPath?.careerOptions) {
+      const roleNames = Object.keys(careerPath.careerOptions);
+      // Expand first role by default when stream changes
+      setExpandedRoles(() => roleNames.reduce((acc, name, idx) => {
+        acc[name] = idx === 0;
+        return acc;
+      }, {}));
+    }
+  }, [careerPath]);
+
   return (
     <>
     <div className="grid lg:grid-cols-2 gap-8">
@@ -457,6 +473,50 @@ function ResultView({ result, userClass, onCopyCode, onRetryRequest }) {
           </div>
         )}
 
+        {/* Suggested Colleges moved under predicted stream (left column) */}
+        <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-6 ring-1 ring-black/5">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Suggested Colleges</h3>
+              <p className="text-sm text-gray-500">Showing {Math.min(matchingColleges.length, showAllColleges ? matchingColleges.length : 5)} of {matchingColleges.length} matches</p>
+            </div>
+            {matchingColleges.length > 5 && (
+              <button
+                onClick={() => setShowAllColleges((v) => !v)}
+                className="text-sm font-medium text-blue-600 hover:text-blue-800"
+              >
+                {showAllColleges ? 'View less' : 'View more colleges'}
+              </button>
+            )}
+          </div>
+          {matchingColleges.length > 0 ? (
+            <ul className="divide-y divide-gray-200">
+              {(showAllColleges ? matchingColleges : matchingColleges.slice(0, 5)).map((college) => (
+                <li key={college.id} className="py-3 flex items-start justify-between gap-4">
+                  <div>
+                    <p className="font-medium text-gray-900">{college.collegeName}</p>
+                    <p className="text-sm text-gray-600">{college.location} • {Array.isArray(college.CollegeType) ? college.CollegeType.join(', ') : String(college.CollegeType || '')}</p>
+                  </div>
+                  {college.link ? (
+                    <a
+                      href={college.link.startsWith('http') ? college.link : `https://${college.link}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    >
+                      Visit <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  ) : (
+                    <span className="text-xs text-gray-400">No link</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-gray-600">No colleges found for this stream in our dataset.</p>
+          )}
+        </div>
+
       </div>
       
       {/* AI Roadmap */}
@@ -476,7 +536,7 @@ function ResultView({ result, userClass, onCopyCode, onRetryRequest }) {
             <div className="flex items-center space-x-2">
               <button
                 onClick={onCopyCode}
-                className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-700 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-800 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors"
               >
                 <Copy className="w-4 h-4" />
                 <span>Copy Code</span>
@@ -494,7 +554,7 @@ function ResultView({ result, userClass, onCopyCode, onRetryRequest }) {
           </div>
 
           {mermaidCode ? (
-            <div className="border border-gray-200 rounded-lg overflow-hidden">
+            <div className="border border-gray-200 rounded-lg max-h-[520px] overflow-auto">
               <MermaidRenderer code={mermaidCode} onRetryRequest={onRetryRequest} />
             </div>
           ) : (
@@ -521,51 +581,78 @@ function ResultView({ result, userClass, onCopyCode, onRetryRequest }) {
             </p>
           </div>
         </div>
-      </div>
-    </div>
 
-    {/* Full-width Colleges Suggestions */}
-    <div className="mt-2">
-      <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-6 ring-1 ring-black/5">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900">Suggested Colleges</h3>
-            <p className="text-sm text-gray-500">Showing {Math.min(matchingColleges.length, showAllColleges ? matchingColleges.length : 5)} of {matchingColleges.length} matches</p>
-          </div>
-          {matchingColleges.length > 5 && (
-            <button
-              onClick={() => setShowAllColleges((v) => !v)}
-              className="text-sm font-medium text-blue-600 hover:text-blue-800"
-            >
-              {showAllColleges ? 'View less' : 'View more colleges'}
-            </button>
-          )}
-        </div>
-        {matchingColleges.length > 0 ? (
-          <ul className="divide-y divide-gray-200">
-            {(showAllColleges ? matchingColleges : matchingColleges.slice(0, 5)).map((college) => (
-              <li key={college.id} className="py-3 flex items-start justify-between gap-4">
-                <div>
-                  <p className="font-medium text-gray-900">{college.collegeName}</p>
-                  <p className="text-sm text-gray-600">{college.location} • {college.CollegeType.join(', ')}</p>
+        {/* Career Path Details (from careerPaths) */}
+        {careerPath && (
+          <div className="glass bg-white/90 dark:bg-[#0b1220]/80 backdrop-blur rounded-2xl shadow-lg p-6 ring-1 ring-black/5">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+                <BookOpen className="w-5 h-5 text-emerald-700" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Career Path Details</h3>
+            </div>
+
+            {careerPath.description && (
+              <p className="text-gray-700 mb-4">{careerPath.description}</p>
+            )}
+
+            {Array.isArray(careerPath.subjects) && careerPath.subjects.length > 0 && (
+              <div className="mb-6">
+                <h4 className="font-semibold text-gray-900 mb-2">Core Subjects</h4>
+                <div className="flex flex-wrap gap-2">
+                  {careerPath.subjects.map((subj, idx) => (
+                    <span key={idx} className="bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-full text-xs font-medium">
+                      {subj}
+                    </span>
+                  ))}
                 </div>
-                {college.link ? (
-                  <a
-                    href={college.link.startsWith('http') ? college.link : `https://${college.link}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium"
-                  >
-                    Visit <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                ) : (
-                  <span className="text-xs text-gray-400">No link</span>
-                )}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-sm text-gray-600">No colleges found for this stream in our dataset.</p>
+              </div>
+            )}
+
+            {careerPath.careerOptions && (
+              <div className="space-y-5">
+                {Object.entries(careerPath.careerOptions).map(([roleName, roleData]) => {
+                  const isOpen = !!expandedRoles[roleName];
+                  return (
+                    <div key={roleName} className="border border-gray-200 rounded-lg">
+                      <button
+                        type="button"
+                        onClick={() => setExpandedRoles((prev) => ({ ...prev, [roleName]: !prev[roleName] }))}
+                        className="w-full flex items-center justify-between p-4 hover:bg-gray-500 rounded-lg"
+                      >
+                        <h5 className="font-semibold text-gray-900 text-left">{roleName}</h5>
+                        <ArrowRight className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? 'rotate-90' : ''}`} />
+                      </button>
+                      {isOpen && roleData?.subRoles && (
+                        <div className="px-4 pb-4 grid sm:grid-cols-2 gap-3">
+                          {Object.entries(roleData.subRoles).map(([subRoleName, subRoleData]) => (
+                            <div key={subRoleName} className="bg-gray-800 rounded-md p-3 border border-gray-200">
+                              <div className="flex items-center justify-between">
+                                <p className="text-white font-medium text-sm">{subRoleName}</p>
+                                {subRoleData?.salary && (
+                                  <span className="text-[11px] text-black bg-white border border-gray-200 px-2 py-0.5 rounded-full">{subRoleData.salary}</span>
+                                )}
+                              </div>
+                              {Array.isArray(subRoleData?.companies) && subRoleData.companies.length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-1.5">
+                                  {subRoleData.companies.slice(0,4).map((cmp, i) => (
+                                    <span key={i} className="text-[11px] bg-white border border-gray-200 text-black px-2 py-0.5 rounded-md">{cmp}</span>
+                                  ))}
+                                  {subRoleData.companies.length > 4 && (
+                                    <span className="text-[11px] text-gray-600">+{subRoleData.companies.length - 4} more</span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>

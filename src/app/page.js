@@ -40,6 +40,7 @@ export default function Home() {
   
   // Hero carousel images from public/images
   const slides = [
+    "containerImages/IMG_20250920_102648.jpg",
     "/images/WhatsApp Image 2025-09-19 at 3.55.30 PM.jpeg",
     "/images/WhatsApp Image 2025-09-19 at 3.55.30 PM (1).jpeg",
     "/images/WhatsApp Image 2025-09-19 at 3.55.31 PM.jpeg",
@@ -90,7 +91,7 @@ export default function Home() {
                 </h1>
                 
                 <p className="text-xl md:text-2xl text-gray-700/90 dark:text-gray-200 leading-relaxed max-w-2xl">
-                  Are you in Class 11 or 12 and thinking about your future after school? Discover the incredible opportunities waiting for you at Government Colleges across Jammu & Kashmir — where quality education meets affordability.
+                  Are you in Class 10 or 12 and thinking about your future after school? Discover the incredible opportunities waiting for you at Government Colleges across Jammu & Kashmir — where quality education meets affordability.
                 </p>
               </div>
 
