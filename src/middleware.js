@@ -3,8 +3,6 @@ import { NextResponse } from 'next/server';
 const allowedOrigins = new Set([
   'http://localhost:3000',
   'http://127.0.0.1:3000',
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
   'http://localhost:8000',
   'http://127.0.0.1:8000',
   'http://localhost:8080',
@@ -21,7 +19,7 @@ export function middleware(request) {
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-XSS-Protection', '1; mode=block');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  response.headers.set('Permissions-Policy', 'geolocation=(self), microphone=(), camera=()');
   // Build a CSP with dev-friendly connect-src when not in production
   const isProd = process.env.NODE_ENV === 'production';
   const connectSrc = [
