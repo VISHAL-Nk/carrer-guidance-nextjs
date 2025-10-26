@@ -449,3 +449,51 @@ textarea:disabled {
     border: 1px solid #e5e7eb;
   }
 }
+
+/* Leaflet popup styles for dark mode */
+@media (prefers-color-scheme: dark) {
+  .leaflet-popup-content-wrapper {
+    background-color: #1f2937 !important; /* gray-800 */
+    color: #f3f4f6 !important; /* gray-100 */
+  }
+  
+  .leaflet-popup-tip {
+    background-color: #1f2937 !important; /* gray-800 */
+  }
+  
+  /* Ensure text in popups is light in dark mode */
+  .leaflet-popup-content {
+    color: #f3f4f6 !important;
+  }
+  
+  .leaflet-popup-content .text-gray-900 {
+    color: #f3f4f6 !important;
+  }
+  
+  .leaflet-popup-content .text-gray-700 {
+    color: #e5e7eb !important;
+  }
+  
+  .leaflet-popup-content .text-blue-600 {
+    color: #60a5fa !important; /* blue-400 */
+  }
+}
+
+/* Light mode - ensure dark text on white background */
+@media (prefers-color-scheme: light) {
+  .leaflet-popup-content-wrapper {
+    background-color: #ffffff !important;
+  }
+  
+  .leaflet-popup-content {
+    color: #111827 !important; /* gray-900 */
+  }
+  
+  .leaflet-popup-content .text-gray-900 {
+    color: #111827 !important;
+  }
+  
+  .leaflet-popup-content .text-gray-700 {
+    color: #374151 !important;
+  }
+}

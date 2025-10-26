@@ -108,9 +108,8 @@ export default function Home() {
                       <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300 relative z-10" />
                     </Link>
                     <Link
-                      href="http://localhost:5173/"
+                      href="/find-colleges"
                       className="group inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-blue-700 dark:text-blue-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-2 border-blue-200 dark:border-blue-700 rounded-2xl hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300"
-                      target="_blank"
                     >
                       <GraduationCap className="w-6 h-6 mr-3" />
                       <span>Find Colleges</span>

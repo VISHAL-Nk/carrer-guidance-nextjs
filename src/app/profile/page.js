@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { User, Calendar, MapPin, GraduationCap, BookOpen } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
@@ -129,6 +130,17 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-2xl mx-auto">
+        {/* Back to Home Link */}
+        <Link 
+          href="/"
+          className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium mb-6 transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Home
+        </Link>
+
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4">

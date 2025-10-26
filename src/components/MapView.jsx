@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+"use client";
+
+import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import { LatLngTuple, Icon, divIcon } from 'leaflet';
-import { CollegeWithDistance, UserLocation } from '../types/college';
+import { Icon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 // Fix for default markers in react-leaflet
@@ -39,13 +40,34 @@ const highlightedCollegeIcon = new Icon({
   iconAnchor: [17.5, 17.5]
 });
 
-interface MapViewProps {
-  userLocation: UserLocation;
-  colleges: CollegeWithDistance[];
-  nearestColleges: CollegeWithDistance[];
-}
+/**
+ * @typedef {Object} UserLocation
+ * @property {number} latitude
+ * @property {number} longitude
+ * @property {string} [state]
+ */
 
-const MapUpdater: React.FC<{ center: LatLngTuple; colleges: CollegeWithDistance[] }> = ({ center, colleges }) => {
+/**
+ * @typedef {Object} CollegeWithDistance
+ * @property {string} id
+ * @property {string} name
+ * @property {string} city
+ * @property {string} state
+ * @property {number} latitude
+ * @property {number} longitude
+ * @property {number} distance
+ * @property {number} travelTime
+ * @property {number} established
+ */
+
+/**
+ * @typedef {Object} MapViewProps
+ * @property {UserLocation} userLocation
+ * @property {CollegeWithDistance[]} colleges
+ * @property {CollegeWithDistance[]} nearestColleges
+ */
+
+const MapUpdater = ({ center, colleges }) => {
   const map = useMap();
 
   useEffect(() => {
@@ -54,21 +76,22 @@ const MapUpdater: React.FC<{ center: LatLngTuple; colleges: CollegeWithDistance[
       colleges.forEach(college => {
         bounds.push([college.latitude, college.longitude]);
       });
-      map.fitBounds(bounds as any, { padding: [50, 50] });
+      map.fitBounds(bounds, { padding: [50, 50] });
     }
   }, [map, center, colleges]);
 
   return null;
 };
 
-const MapView: React.FC<MapViewProps> = ({ userLocation, colleges, nearestColleges }) => {
-  const mapRef = useRef(null);
-  const center: LatLngTuple = [userLocation.latitude, userLocation.longitude];
+/**
+ * @param {MapViewProps} props
+ */
+export default function MapView({ userLocation, colleges, nearestColleges }) {
+  const center = [userLocation.latitude, userLocation.longitude];
 
   return (
-    <div className="h-96 w-full rounded-xl overflow-hidden shadow-lg border-2 border-gray-200">
+    <div className="h-[500px] w-[80%] mx-auto rounded-xl overflow-hidden shadow-lg border-2 border-gray-200 dark:border-gray-700">
       <MapContainer
-        ref={mapRef}
         center={center}
         zoom={8}
         className="h-full w-full"
@@ -86,7 +109,7 @@ const MapView: React.FC<MapViewProps> = ({ userLocation, colleges, nearestColleg
           <Popup>
             <div className="text-center">
               <div className="font-semibold text-blue-600">Your Location</div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-gray-700">
                 {userLocation.state && `${userLocation.state}`}
               </div>
             </div>
@@ -114,15 +137,15 @@ const MapView: React.FC<MapViewProps> = ({ userLocation, colleges, nearestColleg
                     </div>
                   )}
                   <div className="font-semibold text-gray-900 mb-1">{college.name}</div>
-                  <div className="text-sm text-gray-600 mb-2">{college.city}, {college.state}</div>
+                  <div className="text-sm text-gray-700 mb-2">{college.city}, {college.state}</div>
                   <div className="space-y-1">
-                    <div className="text-sm">
+                    <div className="text-sm text-gray-900">
                       <span className="font-medium">Distance:</span> {college.distance} km
                     </div>
-                    <div className="text-sm">
+                    <div className="text-sm text-gray-900">
                       <span className="font-medium">Travel Time:</span> ~{college.travelTime} min
                     </div>
-                    <div className="text-sm">
+                    <div className="text-sm text-gray-900">
                       <span className="font-medium">Established:</span> {college.established}
                     </div>
                   </div>
@@ -134,6 +157,4 @@ const MapView: React.FC<MapViewProps> = ({ userLocation, colleges, nearestColleg
       </MapContainer>
     </div>
   );
-};
-
-export default MapView;
+}
